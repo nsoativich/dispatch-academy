@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DISPATCH ACADEMY — 30 Day Plan</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f4f0;
+    --accent: #ff4d00;
+    --accent2: #00c2ff;
+    --muted: #2a2a2a;
+    --card: #131313;
+    --border: #222;
+    --green: #00e676;
+    --yellow: #ffd600;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: var(--black);
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -0.5px;
+  }
+
+  .logo span { color: var(--accent); }
+
+  .badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    background: var(--accent);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+  }
+
+  /* NAV TABS */
+  .tabs {
+    display: flex;
+    gap: 0;
+    padding: 0 24px;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab {
+    padding: 14px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    color: #666;
+    transition: all 0.2s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    color: #666;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .tab:hover { color: var(--white); }
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  /* SECTIONS */
+  .section { display: none; padding: 32px 24px; max-width: 900px; margin: 0 auto; }
+  .section.active { display: block; }
+
+  /* HERO */
+  .hero {
+    padding: 48px 24px 32px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .hero-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+  }
+
+  .hero h1 {
+    font-size: clamp(36px, 8vw, 72px);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 em {
+    color: var(--accent);
+    font-style: normal;
+  }
+
+  .hero p {
+    color: #888;
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 520px;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 32px;
+    margin-top: 32px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .stat { }
+  .stat-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .stat-label { font-size: 12px; color: #555; margin-top: 4px; }
+
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  .chip {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+  }
+
+  .chip-orange { background: rgba(255,77,0,0.15); color: var(--accent); }
+  .chip-blue { background: rgba(0,194,255,0.15); color: var(--accent2); }
+  .chip-green { background: rgba(0,230,118,0.15); color: var(--green); }
+  .chip-yellow { background: rgba(255,214,0,0.15); color: var(--yellow); }
+
+  /* WEEK GRID */
+  .week-header {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin: 32px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .week-header::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .day-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+
+  .day-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 18px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .day-card:hover { border-color: var(--accent); }
+
+  .day-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: #444;
+    margin-bottom: 8px;
+  }
+
+  .day-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .day-focus { font-size: 12px; color: #666; line-height: 1.5; }
+  .day-tag {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* VOCAB */
+  .vocab-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+
+  .vocab-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 18px;
+  }
+
+  .vocab-term {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    color: var(--accent2);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .vocab-def { font-size: 13px; color: #aaa; line-height: 1.5; margin-bottom: 8px; }
+  .vocab-use { font-size: 12px; color: #555; font-style: italic; }
+
+  /* SCRIPTS */
+  .script-block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  .script-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .script-title { font-size: 14px; font-weight: 600; }
+
+  .script-body { padding: 20px; }
+
+  .dialog-line {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+    align-items: flex-start;
+  }
+
+  .speaker {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    white-space: nowrap;
+    min-width: 90px;
+    text-align: center;
+    margin-top: 2px;
+  }
+
+  .you { background: rgba(255,77,0,0.2); color: var(--accent); }
+  .broker { background: rgba(0,194,255,0.2); color: var(--accent2); }
+  .carrier { background: rgba(0,230,118,0.2); color: var(--green); }
+
+  .line-text { font-size: 13px; line-height: 1.6; color: #ccc; }
+  .line-note { font-size: 11px; color: #555; margin-top: 3px; font-style: italic; }
+
+  /* IDEAS */
+  .idea-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .idea-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+  }
+
+  .idea-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+
+  .idea-title { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+  .idea-desc { font-size: 14px; color: #888; line-height: 1.7; margin-bottom: 16px; }
+
+  .idea-impact {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .impact-item { }
+  .impact-label { font-size: 10px; color: #555; letter-spacing: 1px; font-family: 'Space Mono', monospace; }
+  .impact-val { font-size: 14px; font-weight: 600; margin-top: 2px; }
+
+  /* SEARCH */
+  .search-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .search-box input {
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--white);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    flex: 1;
+  }
+
+  .search-box input::placeholder { color: #444; }
+  .search-icon { color: #444; font-size: 16px; }
+
+  /* FILTER CHIPS */
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .filter-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 6px 14px;
+    border-radius: 2px;
+    border: 1px solid var(--border);
+    background: none;
+    color: #666;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(255,77,0,0.08);
+  }
+
+  /* PROGRESS */
+  .progress-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 32px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 6px;
+  }
+
+  .section-sub { font-size: 14px; color: #555; margin-bottom: 28px; }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .stats-row { gap: 20px; }
+    .hero h1 { letter-spacing: -1px; }
+    .section { padding: 24px 16px; }
+    .hero { padding: 32px 16px 24px; }
+    .tabs { padding: 0 16px; }
+    header { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">DISPATCH<span>.</span>ACADEMY</div>
+  <div class="badge">30-DAY PROGRAM</div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('overview')">Overview</button>
+  <button class="tab" onclick="showTab('plan')">30-Day Plan</button>
+  <button class="tab" onclick="showTab('vocab')">Vocabulary</button>
+  <button class="tab" onclick="showTab('scripts')">Scripts</button>
+  <button class="tab" onclick="showTab('ideas')">🔥 Unique Ideas</button>
+</div>
+
+<!-- OVERVIEW -->
+<div id="overview" class="section active">
+  <div class="hero" style="padding-left:0;padding-right:0;">
+    <div class="hero-tag">// TOSHKENTDAN DOLLARGACHA</div>
+    <h1>Dispatcher<br>bo'lish — <em>30 kun</em></h1>
+    <p>USA logistics sohasida dispatcher sifatida remote ishlash uchun to'liq roadmap. Vocabulary, muomala scripts, va hech kim o'ylab ko'rmagan 7 ta unique idea.</p>
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-num">30</div>
+        <div class="stat-label">KUN</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">120+</div>
+        <div class="stat-label">VOCABULARY</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">15+</div>
+        <div class="stat-label">REAL SCRIPTS</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">7</div>
+        <div class="stat-label">UNIQUE IDEAS</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Kim bu dispatcher?</div>
+      <div class="chip chip-blue">INTRO</div>
+    </div>
+    <p style="font-size:14px;color:#aaa;line-height:1.7;">
+      Dispatcher — truck driver (carrier) bilan freight broker o'rtasidagi ko'prik. Sen driverning nomidan brokerlarga qo'ng'iroq qilasan, yuk topasan, narx kelishasан, hammasini koordinatsiya qilasan. Toshkentda o'tirib, Amerikaning highway'larida "virtual" ishlaysan. Daromad: <strong style="color:var(--accent)">har bir load'dan $150–$300 komissiya</strong>.
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Dispatcher vs Broker — farqi nima?</div>
+      <div class="chip chip-orange">MUHIM</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px;">
+      <div>
+        <div style="font-size:12px;color:var(--accent2);font-family:'Space Mono',monospace;margin-bottom:8px;">DISPATCHER</div>
+        <ul style="font-size:13px;color:#aaa;line-height:2;list-style:none;">
+          <li>→ Driver tomonida ishlaydi</li>
+          <li>→ Litsenziya shart emas</li>
+          <li>→ Driver shartnoma tuzadi</li>
+          <li>→ Komissiya: 5-10% load'dan</li>
+          <li>→ Boshlash osonroq</li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--green);font-family:'Space Mono',monospace;margin-bottom:8px;">BROKER</div>
+        <ul style="font-size:13px;color:#aaa;line-height:2;list-style:none;">
+          <li>→ Shipper tomonida ishlaydi</li>
+          <li>→ MC litsenziya kerak ($300+)</li>
+          <li>→ O'zi kontrakt tuzadi</li>
+          <li>→ Margin: $200-800/load</li>
+          <li>→ Ko'proq kapital kerak</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Hoziroq boshla — bu 3 ta narsa bilan</div>
+      <div class="chip chip-green">ACTION</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:8px;">
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="font-family:'Space Mono',monospace;font-size:20px;color:var(--accent);min-width:32px;">1</div>
+        <div>
+          <div style="font-size:14px;font-weight:600;">DAT Load Board — bepul trial ro'yxatdan o't</div>
+          <div style="font-size:12px;color:#666;margin-top:3px;">dat.com — USA'dagi eng katta yuk platformasi. Ko'rish uchun trial yetarli.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="font-family:'Space Mono',monospace;font-size:20px;color:var(--accent);min-width:32px;">2</div>
+        <div>
+          <div style="font-size:14px;font-weight:600;">YouTube: "dispatcher training 2024" — 10 ta video ko'r</div>
+          <div style="font-size:12px;color:#666;margin-top:3px;">Loadsmith, Dispatch Funnel, Prime Dispatch — bularni kuz.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="font-family:'Space Mono',monospace;font-size:20px;color:var(--accent);min-width:32px;">3</div>
+        <div>
+          <div style="font-size:14px;font-weight:600;">Facebook: "Truck Dispatcher" guruhlariga qo'shil</div>
+          <div style="font-size:12px;color:#666;margin-top:3px;">Real dispatcher'lar bilan tanish, savol ber, ko'r qanday ishlaydi.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 30-DAY PLAN -->
+<div id="plan" class="section">
+  <div class="section-title">30-Kunlik Plan</div>
+  <div class="section-sub">Har kun 1.5–2 soat. Kechqurun ishdan keyin ham bo'ladi.</div>
+
+  <div class="progress-bar">
+    <div class="progress-fill" style="width:0%" id="progress"></div>
+  </div>
+
+  <div class="week-header">HAFTA 1 — ASOS</div>
+  <div class="day-grid">
+    <div class="day-card">
+      <div class="day-num">KUN 01</div>
+      <div class="day-title">Industry overview</div>
+      <div class="day-focus">USA trucking industry nima, qanday ishlaydi. Dispatcher roli. YouTube: 3 ta intro video.</div>
+      <span class="day-tag chip chip-blue">NAZARIYA</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 02</div>
+      <div class="day-title">Truck types</div>
+      <div class="day-focus">Dry Van, Reefer, Flatbed, Step Deck, RGN — farqlarini yodla. Har birining xususiyati.</div>
+      <span class="day-tag chip chip-orange">VOCABULARY</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 03</div>
+      <div class="day-title">Load boards</div>
+      <div class="day-focus">DAT, Truckstop, 123Loadboard — ro'yxatdan o't, interface'ni o'rgan. Load qanday ko'rinadi.</div>
+      <span class="day-tag chip chip-green">AMALIYOT</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 04</div>
+      <div class="day-title">Documents & paperwork</div>
+      <div class="day-focus">Rate Confirmation, BOL, POD, Invoice — nima bu hujjatlar, qachon kerak.</div>
+      <span class="day-tag chip chip-orange">VOCABULARY</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 05</div>
+      <div class="day-title">HOS & Regulations</div>
+      <div class="day-focus">Hours of Service qoidalari. Driver qancha yurishga haqli. ELD nima. DOT rules.</div>
+      <span class="day-tag chip chip-blue">NAZARIYA</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 06</div>
+      <div class="day-title">Lanes & geography</div>
+      <div class="day-focus">USA asosiy yo'nalishlari: East Coast, West Coast, Midwest, South. Qaysi lane qimmat.</div>
+      <span class="day-tag chip chip-blue">NAZARIYA</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 07</div>
+      <div class="day-title">Hafta yakuni — takror</div>
+      <div class="day-focus">Hamma vocabulary'ni takrorla. Bir broker bilan simulyatsiya dialog yoz.</div>
+      <span class="day-tag chip chip-yellow">TAKROR</span>
+    </div>
+  </div>
+
+  <div class="week-header">HAFTA 2 — MUOMALA</div>
+  <div class="day-grid">
+    <div class="day-card">
+      <div class="day-num">KUN 08</div>
+      <div class="day-title">Cold calling basics</div>
+      <div class="day-focus">Broker'ga birinchi qo'ng'iroq qanday qilinadi. Intro script yodla. Accent bilan ishla.</div>
+      <span class="day-tag chip chip-orange">SCRIPT</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 09</div>
+      <div class="day-title">Rate negotiation</div>
+      <div class="day-focus">Narx qanday kelishiladi. "What's the best you can do?" taktikasi. Counter-offer qanday beriladi.</div>
+      <span class="day-tag chip chip-orange">SCRIPT</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 10</div>
+      <div class="day-title">Email communication</div>
+      <div class="day-focus">Professional email yozish. Rate con so'rash. Load confirmation emaili formati.</div>
+      <span class="day-tag chip chip-green">AMALIYOT</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 11</div>
+      <div class="day-title">Objection handling</div>
+      <div class="day-focus">"We have our own carriers", "Rate too high" — har bir e'tirozga tayyor javob.</div>
+      <span class="day-tag chip chip-orange">SCRIPT</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 12</div>
+      <div class="day-title">Driver management</div>
+      <div class="day-focus">Driver bilan muomala. Update berish, muammo hal qilish, professional bo'lib qolish.</div>
+      <span class="day-tag chip chip-green">AMALIYOT</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 13</div>
+      <div class="day-title">Problem scenarios</div>
+      <div class="day-focus">Truck breakdown, late pickup, shipper reject — bu holatlar uchun script va harakat plani.</div>
+      <span class="day-tag chip chip-orange">SCRIPT</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 14</div>
+      <div class="day-title">Mock calls — record qil</div>
+      <div class="day-focus">O'zingni yozib ol, eshit, analyze qil. Kamida 5 ta simulyatsiya qo'ng'iroq.</div>
+      <span class="day-tag chip chip-yellow">AMALIYOT</span>
+    </div>
+  </div>
+
+  <div class="week-header">HAFTA 3 — AMALIYOT</div>
+  <div class="day-grid">
+    <div class="day-card">
+      <div class="day-num">KUN 15</div>
+      <div class="day-title">Rate per mile hisoblash</div>
+      <div class="day-focus">RPM nima, qanday hisob qilinadi. Fuel surcharge. Accessorial charges.</div>
+      <span class="day-tag chip chip-blue">NAZARIYA</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 16</div>
+      <div class="day-title">Carrier packet setup</div>
+      <div class="day-focus">Driver uchun dispatcher packet tayyorlash. Shartnoma, W-9 form, insurance certificate.</div>
+      <span class="day-tag chip chip-green">AMALIYOT</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 17</div>
+      <div class="day-title">TMS basics</div>
+      <div class="day-focus">Transportation Management System. Bepul variantlar: Truckbase, Axon. Interface o'rgan.</div>
+      <span class="day-tag chip chip-green">AMALIYOT</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 18</div>
+      <div class="day-title">Factoring companies</div>
+      <div class="day-focus">Factoring nima, driver nima uchun kerak qilib oladi. Triumph, OTR Capital, RTS.</div>
+      <span class="day-tag chip chip-blue">NAZARIYA</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 19</div>
+      <div class="day-title">Market trends & rates</div>
+      <div class="day-focus">DAT rate analytics o'qi. Qaysi region qachon qimmat, qachon arzon. Seasonal patterns.</div>
+      <span class="day-tag chip chip-blue">NAZARIYA</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 20</div>
+      <div class="day-title">LinkedIn profil</div>
+      <div class="day-focus">Professional dispatcher profil yarat. Bio, skills, portfolio. Birinchi connections.</div>
+      <span class="day-tag chip chip-green">AMALIYOT</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 21</div>
+      <div class="day-title">Hafta yakuni</div>
+      <div class="day-focus">Real load board'da 10 ta load analyze qil. Narxlarni solishtir, lane'larni o'rgan.</div>
+      <span class="day-tag chip chip-yellow">TAKROR</span>
+    </div>
+  </div>
+
+  <div class="week-header">HAFTA 4 — BIZNES BOSHLASH</div>
+  <div class="day-grid">
+    <div class="day-card">
+      <div class="day-num">KUN 22</div>
+      <div class="day-title">First driver qidirish</div>
+      <div class="day-focus">Facebook Groups, Telegram, Craigslist orqali birinchi carrier topish strategiyasi.</div>
+      <span class="day-tag chip chip-orange">BIZNES</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 23</div>
+      <div class="day-title">Dispatcher agreement</div>
+      <div class="day-focus">Driver bilan shartnoma tuzish. Komissiya, termination clause, scope of work.</div>
+      <span class="day-tag chip chip-orange">BIZNES</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 24</div>
+      <div class="day-title">Pricing your service</div>
+      <div class="day-focus">O'z narxingni belgilash. Flat fee vs percentage. Raqobatchilar qancha oladi.</div>
+      <span class="day-tag chip chip-orange">BIZNES</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 25</div>
+      <div class="day-title">First real load simulation</div>
+      <div class="day-focus">Boshidan oxirigacha bitta load'ni simulate qil: topish, kelishish, confirm, track, deliver.</div>
+      <span class="day-tag chip chip-green">AMALIYOT</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 26</div>
+      <div class="day-title">Upwork & freelance apply</div>
+      <div class="day-focus">Upwork'da dispatcher/logistics profil. Birinchi 5 ta job'ga apply. Proposal yozish.</div>
+      <span class="day-tag chip chip-orange">BIZNES</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 27</div>
+      <div class="day-title">Accounting basics</div>
+      <div class="day-focus">Invoice yuborish, payment tracking, komissiya hisoblash. Simple spreadsheet yarat.</div>
+      <span class="day-tag chip chip-green">AMALIYOT</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 28</div>
+      <div class="day-title">Scale up strategiyasi</div>
+      <div class="day-focus">1 driver → 5 driver qanday o'sish mumkin. Virtual assistant yollash. Process avtomatlashtirish.</div>
+      <span class="day-tag chip chip-orange">BIZNES</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 29</div>
+      <div class="day-title">Brand & online presence</div>
+      <div class="day-focus">Dispatch company nomi, logo (Canva), professional email, Instagram/LinkedIn page.</div>
+      <span class="day-tag chip chip-orange">BIZNES</span>
+    </div>
+    <div class="day-card">
+      <div class="day-num">KUN 30</div>
+      <div class="day-title">🎯 LAUNCH DAY</div>
+      <div class="day-focus">Hamma narsa tayyor. Birinchi real driver bilan shartnoma yoki birinchi Upwork kontrakti.</div>
+      <span class="day-tag chip chip-green">FINAL</span>
+    </div>
+  </div>
+</div>
+
+<!-- VOCABULARY -->
+<div id="vocab" class="section">
+  <div class="section-title">Dispatcher Vocabulary</div>
+  <div class="section-sub">Broker, shipper va carrier bilan muomala uchun zarur so'zlar.</div>
+
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input type="text" placeholder="So'z qidirish..." id="vocabSearch" oninput="filterVocab()">
+  </div>
+
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="filterVocabCat('all', this)">HAMMASI</button>
+    <button class="filter-btn" onclick="filterVocabCat('core', this)">ASOSIY</button>
+    <button class="filter-btn" onclick="filterVocabCat('loads', this)">LOADLAR</button>
+    <button class="filter-btn" onclick="filterVocabCat('docs', this)">HUJJATLAR</button>
+    <button class="filter-btn" onclick="filterVocabCat('money', this)">MOLIYA</button>
+    <button class="filter-btn" onclick="filterVocabCat('problems', this)">MUAMMOLAR</button>
+  </div>
+
+  <div class="vocab-grid" id="vocabGrid"></div>
+</div>
+
+<!-- SCRIPTS -->
+<div id="scripts" class="section">
+  <div class="section-title">Muomala Scripts</div>
+  <div class="section-sub">Real so'zlar, real holatlarga. Yodla, mashq qil, o'zlashtrір.</div>
+
+  <div class="script-block">
+    <div class="script-header">
+      <div class="script-title">Broker'ga birinchi qo'ng'iroq</div>
+      <div class="chip chip-orange">COLD CALL</div>
+    </div>
+    <div class="script-body">
+      <div class="dialog-line">
+        <span class="speaker you">SEN</span>
+        <div>
+          <div class="line-text">"Hi, this is [Ism] calling on behalf of [Carrier Company Name]. I'm their dispatcher. I was looking at your load posted on DAT — the one going from Chicago to Atlanta, load number [XXXX]. Is that still available?"</div>
+          <div class="line-note">Doim load raqamini tayyor tut. Bu professional ko'rsatadi.</div>
+        </div>
+      </div>
+      <div class="dialog-line">
+        <span class="speaker broker">BROKER</span>
+        <div>
+          <div class="line-text">"Yes, it's available. What do you have?"</div>
+        </div>
+      </div>
+      <div class="dialog-line">
+        <span class="speaker you">SEN</span>
+        <div>
+          <div class="line-text">"We have a 53-foot dry van, available tomorrow morning in Chicago. Driver has clean record, no violations. We're ready to go. What's the rate on that?"</div>
+          <div class="line-note">Truck ma'lumotini aniq ayt. "Clean record" — broker uchun muhim.</div>
+        </div>
+      </div>
+      <div class="dialog-line">
+        <span class="speaker broker">BROKER</span>
+        <div>
+          <div class="line-text">"We're at $2,200."</div>
+        </div>
+      </div>
+      <div class="dialog-line">
+        <span class="speaker you">SEN</span>
+        <div>
+          <div class="line-text">"I appreciate that. Looking at current market rates for this lane, we were thinking closer to $2,500. Is there any flexibility there?"</div>
+          <div class="line-note">"I appreciate that" — polite, lekin firm. Market rates reference — mantiqiy argument.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="script-block">
+    <div class="script-header">
+      <div class="script-title">Narx kelishish — advanced taktika</div>
+      <div class="chip chip-yellow">NEGOTIATION</div>
+    </div>
+    <div class="script-body">
+      <div class="dialog-line">
+        <span class="speaker broker">BROKER</span>
+        <div>
+          <div class="line-text">"Best I can do is $2,300. That's it."</div>
+        </div>
+      </div>
+      <div class="dialog-line">
+        <span class="speaker you">SEN</span>
+        <div>
+          <div class="line-text">"I understand. Let me check with my driver real quick and call you right back."</div>
+          <div class="line-note">Hech qachon darhol "yes" dema. Bu taktika — 2-3 daqiqa sabr qil, qayta qo'ng'iroq qil. Broker pressure ostida ko'proq beradi.</div>
+        </div>
+      </div>
+      <div class="dialog-line">
+        <span class="speaker you">SEN</span>
+        <div>
+          <div class="line-text">"Hey, I'm back. My driver said he can make it work at $2,400 — that's his final number. He's a great driver, always on time, no claims. You won't have issues with him."</div>
+          <div class="line-note">Driver'ning ijobiy xususiyatlarini ayt — bu added value. Ko'pincha broker rozi bo'ladi.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="script-block">
+    <div class="script-header">
+      <div class="script-title">Truck breakdown — crisis management</div>
+      <div class="chip chip-orange">EMERGENCY</div>
+    </div>
+    <div class="script-body">
+      <div class="dialog-line">
+        <span class="speaker carrier">DRIVER</span>
+        <div>
+          <div class="line-text">"Hey man, my truck broke down. I'm on I-40, somewhere near Oklahoma City."</div>
+        </div>
+      </div>
+      <div class="dialog-line">
+        <span class="speaker you">SEN</span>
+        <div>
+          <div class="line-text">"Okay, stay calm. Are you safe? Is the truck off the road? Good. I'm calling the broker right now, I'll handle everything."</div>
+          <div class="line-note">Birinchi — driver'ni tinchlantir. Keyin broker.</div>
+        </div>
+      </div>
+      <div class="dialog-line">
+        <span class="speaker you">SEN</span>
+        <div>
+          <div class="line-text">"Hi [Broker Name], this is [Ism] from [Company]. I need to give you a heads up — our driver experienced a mechanical issue on I-40 near OKC. We're handling it right now, getting roadside assistance. ETA may be delayed by 3-4 hours. I wanted to notify you immediately and I'll keep you updated every hour."</div>
+          <div class="line-note">Transparent bo'l, darhol xabar ber. "Every hour update" — bu professional ko'rsatadi va broker'ni tinchlantiради.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="script-block">
+    <div class="script-header">
+      <div class="script-title">Yangi driver bilan birinchi uchrashuv</div>
+      <div class="chip chip-green">CARRIER</div>
+    </div>
+    <div class="script-body">
+      <div class="dialog-line">
+        <span class="speaker you">SEN</span>
+        <div>
+          <div class="line-text">"Hey [Driver Name], I'm [Ism], I'll be your dispatcher. My job is simple — I find you loads, negotiate the best rates, handle all the paperwork and communication. You drive, I handle everything else."</div>
+          <div class="line-note">Driver'ga value'ingni aniq ayt. "You drive, I handle everything" — bu powerful pitch.</div>
+        </div>
+      </div>
+      <div class="dialog-line">
+        <span class="speaker you">SEN</span>
+        <div>
+          <div class="line-text">"My fee is 8% per load. So if I book you a $3,000 load, I take $240. You keep $2,760. I only make money when you make money — so it's in my interest to get you the best rates possible."</div>
+          <div class="line-note">Fee'ni ochiq ayt. "I only make money when you make money" — trust o'rnatadi.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="script-block">
+    <div class="script-header">
+      <div class="script-title">E'tirozlarni hal qilish</div>
+      <div class="chip chip-blue">OBJECTIONS</div>
+    </div>
+    <div class="script-body">
+      <div class="dialog-line">
+        <span class="speaker broker">BROKER</span>
+        <div>
+          <div class="line-text">"We already have preferred carriers for this lane."</div>
+        </div>
+      </div>
+      <div class="dialog-line">
+        <span class="speaker you">SEN</span>
+        <div>
+          <div class="line-text">"I totally understand. Many brokers say that, and I respect it. But preferred carriers aren't always available when you need them. I'd love to be your backup option — and once you work with my driver, I think you'll move us to the top of your list."</div>
+          <div class="line-note">"Backup option" — bu foot-in-the-door taktikasi. Kamtarona, lekin strategic.</div>
+        </div>
+      </div>
+      <div class="dialog-line">
+        <span class="speaker broker">BROKER</span>
+        <div>
+          <div class="line-text">"Your rate is too high."</div>
+        </div>
+      </div>
+      <div class="dialog-line">
+        <span class="speaker you">SEN</span>
+        <div>
+          <div class="line-text">"I hear you. What rate works for you? I want to make this work. But I also need to make sure my driver covers his fuel and expenses — he's got a family to feed. Can we meet somewhere in the middle?"</div>
+          <div class="line-note">"Family to feed" — emotional, lekin effective. Broker'ni insonga aylantiradi.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- UNIQUE IDEAS -->
+<div id="ideas" class="section">
+  <div class="section-title">🔥 Hech Kim O'ylamagan Idealar</div>
+  <div class="section-sub">Agar men dispatcher bo'lganimda — mana shu 7 ta narsani qilardim.</div>
+
+  <div class="idea-card">
+    <div class="idea-num">IDEA 01</div>
+    <div class="idea-title">Sobiq harbiy va veteran driverlarga ixtisoslash</div>
+    <div class="idea-desc">
+      USA'da veteran truck driverlar juda katta segment — va ular loyalty'ga qaraydi, pulga emas. Agar sen "veteran-friendly dispatcher" bo'lsang, word-of-mouth marketing o'zi ishlaydi. Facebook'da veteran truckers guruhlar to'la. Bitta yaxshi driver = 5 ta referral. Hech qaysi Uzbek dispatcher bu niche'ni olmagan.
+    </div>
+    <div class="idea-impact">
+      <div class="impact-item">
+        <div class="impact-label">NICHE</div>
+        <div class="impact-val" style="color:var(--green);">Veteran drivers</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-label">USTUNLIK</div>
+        <div class="impact-val" style="color:var(--accent2);">Yuqori loyalty</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-label">XARAJAT</div>
+        <div class="impact-val" style="color:var(--yellow);">$0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="idea-card" style="--accent: #00c2ff;">
+    <div class="idea-num">IDEA 02</div>
+    <div class="idea-title">Weekly Market Report — driver'larga bepul yuborish</div>
+    <div class="idea-desc">
+      Har dushanba — driver'larga qisqa SMS/Telegram: "Bu hafta Midwest → Southeast lane strong, avg $3.2/mile. California deadhead avoid." Hech qaysi dispatcher bu qilmaydi. Driver'lar seni "smart dispatcher" deb bilishadi. Loyallik ko'tariladi. Bu 30 daqiqa vaqt oladi, lekin ibrend qiladi.
+    </div>
+    <div class="idea-impact">
+      <div class="impact-item">
+        <div class="impact-label">NIMA BERADI</div>
+        <div class="impact-val" style="color:var(--green);">Trust + Retention</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-label">VAQT</div>
+        <div class="impact-val" style="color:var(--accent2);">30 min/hafta</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="idea-card">
+    <div class="idea-num">IDEA 03</div>
+    <div class="idea-title">Driver'lar uchun "Yuk Topish Kafolati"</div>
+    <div class="idea-desc">
+      "Agar 48 soat ichida yuk topolmasam — o'sha hafta komissiyam 0." Bu risk seniki, lekin hech qaysi dispatcher beradi bu kafolatni. Driver'lar seni tanlaydi, chunki sen skin in the game qo'yasan. Real amalda, yaxshi dispatcher 24 soat ichida yuk topadi — shuning uchun kafolat berib ham yutar bo'lasan.
+    </div>
+    <div class="idea-impact">
+      <div class="impact-item">
+        <div class="impact-label">DIFFERENTIATOR</div>
+        <div class="impact-val" style="color:var(--green);">Kuchli</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-label">RISK</div>
+        <div class="impact-val" style="color:var(--yellow);">Past (boshqariladi)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="idea-card">
+    <div class="idea-num">IDEA 04</div>
+    <div class="idea-title">Toshkentdan "Timezone Advantage" strategiyasi</div>
+    <div class="idea-desc">
+      Toshkent vaqti USA East Coast'dan 9 soat oldinda. Demak — sen ertalab 7:00 da ishga tushsang, USA'da kechki 22:00. Night shift loadlar cheap va ko'p bo'ladi. Sen USA dispatcher'lar uxlab yotganda aktiv bo'lasan. Brokerlar senga qayta-qayta qo'ng'iroq qilishadi, chunki sen "always available" bo'lasan. Bu superpower — lekin hech kim ishlatmaydi.
+    </div>
+    <div class="idea-impact">
+      <div class="impact-item">
+        <div class="impact-label">ADVANTAGE</div>
+        <div class="impact-val" style="color:var(--green);">Noyob</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-label">SCHEDULE</div>
+        <div class="impact-val" style="color:var(--accent2);">07:00–16:00 UZT</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="idea-card">
+    <div class="idea-num">IDEA 05</div>
+    <div class="idea-title">Driver uchun "End of Week Summary" PDF</div>
+    <div class="idea-desc">
+      Har juma — driverga 1 sahifali PDF: necha mile yurildi, necha dollar topildi, qaysi loads eng yaxshi bo'ldi, keyingi hafta uchun tavsiya. Bu professional accountant service. Hech qaysi dispatcher qilmaydi. Lekin driver har juma bu PDF'ni kutadi. Shu PDF ularni ushlab turadi.
+    </div>
+    <div class="idea-impact">
+      <div class="impact-item">
+        <div class="impact-label">NIMA BERADI</div>
+        <div class="impact-val" style="color:var(--green);">Retention 90%+</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-label">VAQT</div>
+        <div class="impact-val" style="color:var(--accent2);">15 min/driver</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="idea-card">
+    <div class="idea-num">IDEA 06</div>
+    <div class="idea-title">Uzbek/Rus driverlar diaspora'si — niche market</div>
+    <div class="idea-desc">
+      USA'da 50,000+ O'rta Osiyo migrant truck driver bor. Ko'pchiligi ingliz tilini yaxshi bilmaydi. Agar sen Uzbekcha/Ruscha gapirsang va dispatcher bo'lsang — bu driver'lar seni tanlaydi. Ular seni o'zlariga "odam" deb biladi. Tillarda raqobat yo'q, boshqa Uzbek dispatcherlar yo'q. Bu 2024-2026 yillarning eng katta niche'i.
+    </div>
+    <div class="idea-impact">
+      <div class="impact-item">
+        <div class="impact-label">MARKET SIZE</div>
+        <div class="impact-val" style="color:var(--green);">50,000+ driver</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-label">RAQOBAT</div>
+        <div class="impact-val" style="color:var(--yellow);">Minimal</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="idea-card">
+    <div class="idea-num">IDEA 07</div>
+    <div class="idea-title">Broker "relationship tracker" spreadsheet</div>
+    <div class="idea-desc">
+      Har qo'ng'iroq qilgan brokerning ismini, kompaniyasini, qaysi laneda ishlashini, narx range'ini Google Sheets'ga yoz. 3 oydan keyin senda 200 brokerlik database bo'ladi. Kimga qachon qo'ng'iroq qilish kerakligini bilasан. Bu CRM tizimi. Hech qaysi yangi dispatcher bu qilmaydi — shu sababdan ular bir joyda qoladi, sen esa o'sasan.
+    </div>
+    <div class="idea-impact">
+      <div class="impact-item">
+        <div class="impact-label">NATIJA</div>
+        <div class="impact-val" style="color:var(--green);">200+ broker network</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-label">XARAJAT</div>
+        <div class="impact-val" style="color:var(--yellow);">$0 (Google Sheets)</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const vocabData = [
+  // CORE
+  { term: "Dispatcher", def: "Truck driver nomidan yuk topadigan, brokerlar bilan muomala qiladigan mutaxassis.", use: '"I am his dispatcher, calling on his behalf."', cat: 'core' },
+  { term: "Carrier", def: "Truck va driver ega bo'lgan transport kompaniyasi yoki individual driver.", use: '"We have a carrier available in Chicago."', cat: 'core' },
+  { term: "Broker", def: "Shipper bilan carrier o'rtasidagi vositachi. Yuk topib, carrier'ga beradi.", use: '"The broker posted a load on DAT."', cat: 'core' },
+  { term: "Shipper", def: "Yukni yuboruvchi kompaniya. Walmart, Amazon, zavodlar — bular shipper.", use: '"The shipper requires delivery by Tuesday noon."', cat: 'core' },
+  { term: "Lane", def: "Yuk ketadigan yo'nalish. Chicago → Atlanta = bitta lane.", use: '"This lane pays well this week."', cat: 'core' },
+  { term: "Deadhead", def: "Bo'sh yurish — yuk olmay ketish. Dispatcher buni minimizatsiya qilishi kerak.", use: '"Try to avoid deadhead miles."', cat: 'core' },
+  { term: "Hot shot", def: "Kichik, tez yetkazish kerak bo'lgan yuklar. Odatda pickup truck yoki medium truck bilan.", use: '"We do hotshot loads too."', cat: 'core' },
+  { term: "Owner-Operator (O/O)", def: "O'z truckini ega bo'lgan va o'zi boshqaradigan driver.", use: '"He is an owner-operator."', cat: 'core' },
+
+  // LOADS
+  { term: "Load", def: "Bitta yuk transport qilish buyurtmasi.", use: '"I found a great load for you."', cat: 'loads' },
+  { term: "Dry Van", def: "Eng keng tarqalgan — yopiq kuzovli truck. Har xil yuk tashiydi.", use: '"We have a 53-foot dry van."', cat: 'loads' },
+  { term: "Reefer", def: "Muzlatgichli truck. Oziq-ovqat, dori-darmon uchun.", use: '"This is a reefer load, requires -10°F."', cat: 'loads' },
+  { term: "Flatbed", def: "Ochiq platformali truck. Qurilish materiallari, mashinalar uchun.", use: '"We need a flatbed for steel coils."', cat: 'loads' },
+  { term: "Full Truckload (FTL)", def: "Butun truckni to'ldiradigan yuk.", use: '"This is a full truckload shipment."', cat: 'loads' },
+  { term: "LTL (Less Than Truckload)", def: "Truck'ning bir qismini to'ldiruvchi yuk. Dispatcher'lar kamroq shug'ullanadi.", use: '"We don\'t do LTL."', cat: 'loads' },
+  { term: "Pickup", def: "Yukni qayerdan olish joyi va vaqti.", use: '"Pickup is at 8 AM in Memphis."', cat: 'loads' },
+  { term: "Delivery / Drop", def: "Yukni qayerga yetkazish.", use: '"Drop is in Atlanta tomorrow."', cat: 'loads' },
+  { term: "Live Load", def: "Driver kutib turib, yuk yuklanadi.", use: '"It\'s a live load, 2-hour wait."', cat: 'loads' },
+  { term: "Drop and Hook", def: "Driver tayyor pritsepni olib ketadi. Kutish yo'q.", use: '"Drop and hook — great for the driver."', cat: 'loads' },
+  { term: "Load Board", def: "Loadlar joylashtirilgan platforma. DAT, Truckstop.", use: '"I found it on DAT load board."', cat: 'loads' },
+
+  // DOCUMENTS
+  { term: "Rate Confirmation (Rate Con)", def: "Broker va carrier o'rtasidagi narx kelishuvi hujjati.", use: '"Please send the rate con ASAP."', cat: 'docs' },
+  { term: "BOL (Bill of Lading)", def: "Yuk hujjati — shipper beradi, driver imzolaydi.", use: '"Driver needs to get the BOL at pickup."', cat: 'docs' },
+  { term: "POD (Proof of Delivery)", def: "Yuk yetkazilganini tasdiqlaydi. Ko'pincha imzolangan BOL.", use: '"Send me the POD when delivered."', cat: 'docs' },
+  { term: "Invoice", def: "To'lov so'rash uchun hujjat. Broker'ga yuborilaди.", use: '"I sent the invoice to the broker."', cat: 'docs' },
+  { term: "MC Number", def: "Motor Carrier raqami. Broker va carrier'lar uchun litsenziya.", use: '"What\'s your MC number?"', cat: 'docs' },
+  { term: "DOT Number", def: "Department of Transportation raqami. Truck uchun majburiy.", use: '"We need your DOT number."', cat: 'docs' },
+  { term: "COI (Certificate of Insurance)", def: "Sug'urta sertifikati. Broker har doim so'raydi.", use: '"Please email your COI."', cat: 'docs' },
+  { term: "ELD (Electronic Logging Device)", def: "Driver vaqtini kuzatuvchi elektron qurilma.", use: '"His ELD shows 8 hours left."', cat: 'docs' },
+
+  // MONEY
+  { term: "Rate per Mile (RPM)", def: "Har milya uchun to'lanadigan pul. $2.5/mile — yaxshi rate.", use: '"What\'s the rate per mile on this load?"', cat: 'money' },
+  { term: "All-in Rate", def: "Yoqilg'i va barcha to'lovlar qo'shilgan umumiy narx.", use: '"Give me the all-in rate."', cat: 'money' },
+  { term: "Fuel Surcharge (FSC)", def: "Yoqilg'i narxiga bog'liq qo'shimcha to'lov.", use: '"FSC is included in the rate."', cat: 'money' },
+  { term: "Accessorial", def: "Qo'shimcha xizmatlar uchun to'lov — kutish, tayinlash, yuk ko'taring.", use: '"Detention and layover are accessorials."', cat: 'money' },
+  { term: "Detention", def: "Driver kutish uchun to'lov. 2 soatdan keyin boshlanadi.", use: '"Driver waited 4 hours — charge detention."', cat: 'money' },
+  { term: "Layover", def: "Driver bir joyda bir kecha qolishi.", use: '"They owe us layover pay."', cat: 'money' },
+  { term: "Factoring", def: "Invoice'ni darhol pulga aylantirish. Factoring company 2-5% oladi.", use: '"We use OTR Capital for factoring."', cat: 'money' },
+  { term: "Quick Pay", def: "Broker tez to'laydi, lekin discount bilan.", use: '"Do you offer quick pay?"', cat: 'money' },
+
+  // PROBLEMS
+  { term: "TONU (Truck Ordered Not Used)", def: "Truck tayyor, lekin shipper bekor qildi. Driver kompensatsiya olishi kerak.", use: '"That\'s a TONU — charge the broker."', cat: 'problems' },
+  { term: "No-show", def: "Driver yoki shipper kelmagani.", use: '"Shipper was a no-show."', cat: 'problems' },
+  { term: "Claim", def: "Yuk buzilganda yoki yo'qolganda berilgan talabнома.", use: '"No claims on his record."', cat: 'problems' },
+  { term: "Breakdown", def: "Truck buzilishi.", use: '"Driver had a breakdown on I-40."', cat: 'problems' },
+  { term: "Late Pickup/Delivery", def: "Kechikkan yuklash yoki yetkazish.", use: '"We\'ll be 2 hours late — I\'ll notify the broker."', cat: 'problems' },
+  { term: "Double Brokering", def: "Illegal amal — load'ni uchinchi tomonga berish. Ehtiyot bo'l.", use: '"Never do double brokering."', cat: 'problems' },
+];
+
+let currentFilter = 'all';
+
+function renderVocab(data) {
+  const grid = document.getElementById('vocabGrid');
+  grid.innerHTML = data.map(v => `
+    <div class="vocab-card" data-cat="${v.cat}">
+      <div class="vocab-term">${v.term}</div>
+      <div class="vocab-def">${v.def}</div>
+      <div class="vocab-use">${v.use}</div>
+    </div>
+  `).join('');
+}
+
+function filterVocab() {
+  const q = document.getElementById('vocabSearch').value.toLowerCase();
+  const filtered = vocabData.filter(v =>
+    (currentFilter === 'all' || v.cat === currentFilter) &&
+    (v.term.toLowerCase().includes(q) || v.def.toLowerCase().includes(q))
+  );
+  renderVocab(filtered);
+}
+
+function filterVocabCat(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterVocab();
+}
+
+renderVocab(vocabData);
+
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
