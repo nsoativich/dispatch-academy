@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KUN 3 — Load Boards</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  --bg: #080808;
+  --surface: #111;
+  --surface2: #181818;
+  --border: #1e1e1e;
+  --accent: #ff4d00;
+  --blue: #00aaff;
+  --green: #00e676;
+  --yellow: #ffd600;
+  --text: #e8e6e0;
+  --muted: #555;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; min-height: 100vh; }
+
+.topbar { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--bg); z-index:50; }
+.day-label { font-family:'Space Mono',monospace; font-size:11px; color:var(--accent); letter-spacing:2px; }
+.progress-wrap { display:flex; align-items:center; gap:10px; }
+.progress-track { width:120px; height:3px; background:var(--border); border-radius:2px; overflow:hidden; }
+.progress-fill { height:100%; background:var(--accent); border-radius:2px; }
+.progress-text { font-family:'Space Mono',monospace; font-size:10px; color:var(--muted); }
+
+.hero { padding:40px 20px 28px; border-bottom:1px solid var(--border); max-width:860px; margin:0 auto; }
+.hero-kicker { font-family:'Space Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:2px; margin-bottom:12px; }
+.hero h1 { font-size:clamp(28px,7vw,54px); font-weight:700; letter-spacing:-1.5px; line-height:1; margin-bottom:14px; }
+.hero h1 .hl { color:var(--accent); }
+.hero p { font-size:14px; color:#777; line-height:1.7; max-width:480px; }
+.meta-row { display:flex; gap:20px; margin-top:24px; flex-wrap:wrap; }
+.meta-item { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); }
+.meta-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); }
+
+.tabs-wrap { border-bottom:1px solid var(--border); padding:0 20px; display:flex; overflow-x:auto; scrollbar-width:none; max-width:860px; margin:0 auto; }
+.tabs-wrap::-webkit-scrollbar { display:none; }
+.tab { padding:13px 18px; font-size:12px; font-weight:500; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; background:none; border-top:none; border-left:none; border-right:none; font-family:'Space Grotesk',sans-serif; transition:color 0.2s; }
+.tab:hover { color:var(--text); }
+.tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+
+.content { max-width:860px; margin:0 auto; padding:28px 20px 60px; }
+.panel { display:none; }
+.panel.active { display:block; }
+
+.sh { font-family:'Space Mono',monospace; font-size:10px; color:var(--accent); letter-spacing:2px; margin-bottom:14px; margin-top:32px; display:flex; align-items:center; gap:10px; }
+.sh::after { content:''; flex:1; height:1px; background:var(--border); }
+.sh:first-child { margin-top:0; }
+
+.info-card { background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:20px; margin-bottom:12px; }
+.info-card h3 { font-size:15px; font-weight:600; margin-bottom:10px; display:flex; align-items:center; gap:10px; }
+.ic-icon { width:28px; height:28px; background:rgba(255,77,0,0.12); border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:14px; }
+.info-card p { font-size:13px; color:#888; line-height:1.75; }
+.info-card p strong { color:var(--text); }
+
+/* PLATFORM CARDS */
+.platform-card { background:var(--surface); border:1px solid var(--border); border-radius:4px; margin-bottom:16px; overflow:hidden; }
+.platform-header { padding:18px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.platform-name { font-size:18px; font-weight:700; }
+.platform-sub { font-size:11px; color:var(--muted); margin-top:3px; font-family:'Space Mono',monospace; }
+.platform-badge { font-size:10px; padding:4px 10px; border-radius:2px; font-family:'Space Mono',monospace; }
+.pb-1 { background:rgba(255,77,0,0.15); color:var(--accent); }
+.pb-2 { background:rgba(0,170,255,0.15); color:var(--blue); }
+.pb-3 { background:rgba(0,230,118,0.15); color:var(--green); }
+.platform-body { padding:20px; }
+.platform-desc { font-size:13px; color:#888; line-height:1.7; margin-bottom:16px; }
+.platform-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+.ps-item { background:var(--surface2); border:1px solid var(--border); border-radius:3px; padding:10px 12px; }
+.ps-label { font-size:10px; color:var(--muted); font-family:'Space Mono',monospace; letter-spacing:1px; margin-bottom:3px; }
+.ps-val { font-size:13px; font-weight:600; }
+.platform-tips { display:flex; flex-direction:column; gap:8px; }
+.tip-item { display:flex; gap:10px; font-size:13px; color:#888; }
+.tip-icon { color:var(--accent); min-width:16px; }
+
+/* LOAD ANATOMY */
+.load-box { background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:20px; margin-bottom:12px; font-family:'Space Mono',monospace; font-size:12px; }
+.load-row { display:flex; gap:12px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--border); }
+.load-row:last-child { border-bottom:none; }
+.load-field { color:var(--blue); min-width:120px; }
+.load-value { color:var(--text); }
+.load-explain { color:var(--muted); font-size:11px; margin-top:3px; font-family:'Space Grotesk',sans-serif; }
+
+/* VOCAB */
+.vocab-controls { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
+.vocab-mode-btn { font-family:'Space Mono',monospace; font-size:11px; padding:7px 14px; border-radius:2px; border:1px solid var(--border); background:none; color:var(--muted); cursor:pointer; transition:all 0.2s; }
+.vocab-mode-btn.active, .vocab-mode-btn:hover { border-color:var(--accent); color:var(--accent); background:rgba(255,77,0,0.07); }
+.vocab-counter { margin-left:auto; font-family:'Space Mono',monospace; font-size:11px; color:var(--muted); }
+
+.vocab-list { display:flex; flex-direction:column; gap:8px; }
+.vocab-item { background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:14px 18px; display:flex; align-items:flex-start; gap:14px; transition:border-color 0.15s; }
+.vocab-item.learned { border-color:var(--green) !important; }
+.vocab-n { font-family:'Space Mono',monospace; font-size:10px; color:var(--muted); min-width:24px; margin-top:2px; }
+.vocab-body { flex:1; }
+.vocab-term { font-size:14px; font-weight:600; color:var(--blue); margin-bottom:3px; font-family:'Space Mono',monospace; }
+.vocab-uz { font-size:12px; color:var(--muted); margin-bottom:4px; }
+.vocab-def-text { font-size:12px; color:#777; line-height:1.6; }
+.vocab-example { font-size:11px; color:#444; margin-top:5px; font-style:italic; }
+.learn-btn { font-size:18px; cursor:pointer; opacity:0.3; transition:opacity 0.2s; background:none; border:none; color:var(--green); padding:0; }
+.learn-btn:hover { opacity:0.7; }
+.vocab-item.learned .learn-btn { opacity:1; }
+
+.flashcard-wrap { display:none; flex-direction:column; align-items:center; gap:20px; }
+.flashcard-wrap.active { display:flex; }
+.flashcard { width:100%; max-width:480px; aspect-ratio:3/2; perspective:1000px; cursor:pointer; }
+.flashcard-inner { width:100%; height:100%; position:relative; transform-style:preserve-3d; transition:transform 0.5s ease; }
+.flashcard.flipped .flashcard-inner { transform:rotateY(180deg); }
+.fc-face { position:absolute; width:100%; height:100%; backface-visibility:hidden; background:var(--surface); border:1px solid var(--border); border-radius:4px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:28px; text-align:center; }
+.fc-back { transform:rotateY(180deg); }
+.fc-label { font-family:'Space Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:2px; margin-bottom:16px; }
+.fc-term { font-family:'Space Mono',monospace; font-size:24px; font-weight:700; color:var(--blue); margin-bottom:8px; }
+.fc-hint { font-size:12px; color:#333; }
+.fc-def { font-size:14px; color:var(--text); line-height:1.6; margin-bottom:10px; }
+.fc-uz { font-size:13px; color:var(--accent); font-weight:600; }
+.fc-ex { font-size:11px; color:var(--muted); margin-top:8px; font-style:italic; }
+.fc-nav { display:flex; gap:12px; align-items:center; }
+.fc-btn { background:var(--surface); border:1px solid var(--border); color:var(--text); padding:10px 20px; border-radius:3px; cursor:pointer; font-family:'Space Grotesk',sans-serif; font-size:13px; transition:border-color 0.2s; }
+.fc-btn:hover { border-color:var(--accent); }
+.fc-pos { font-family:'Space Mono',monospace; font-size:12px; color:var(--muted); min-width:60px; text-align:center; }
+
+.quiz-wrap { max-width:520px; }
+.quiz-q { font-size:15px; font-weight:600; margin-bottom:20px; line-height:1.5; }
+.quiz-options { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+.quiz-opt { background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:14px 18px; cursor:pointer; font-size:13px; text-align:left; color:var(--text); font-family:'Space Grotesk',sans-serif; transition:all 0.15s; }
+.quiz-opt:hover { border-color:var(--blue); }
+.quiz-opt.correct { border-color:var(--green); background:rgba(0,230,118,0.08); color:var(--green); }
+.quiz-opt.wrong { border-color:var(--accent); background:rgba(255,77,0,0.08); color:var(--accent); }
+.quiz-feedback { font-size:13px; color:var(--muted); margin-bottom:16px; min-height:20px; line-height:1.5; }
+.quiz-next-btn { display:none; background:var(--accent); color:#fff; border:none; padding:11px 24px; border-radius:3px; cursor:pointer; font-family:'Space Grotesk',sans-serif; font-size:13px; font-weight:600; }
+.quiz-next-btn.show { display:inline-block; }
+.quiz-score { display:none; text-align:center; padding:40px 20px; }
+.quiz-score.show { display:block; }
+.score-num { font-family:'Space Mono',monospace; font-size:56px; font-weight:700; color:var(--accent); }
+.score-label { font-size:14px; color:var(--muted); margin-top:8px; }
+.score-msg { font-size:16px; margin-top:16px; font-weight:600; }
+
+.checklist { display:flex; flex-direction:column; gap:10px; }
+.check-item { display:flex; gap:14px; align-items:flex-start; background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:16px 18px; cursor:pointer; transition:border-color 0.2s; }
+.check-item.done { border-color:var(--green); }
+.check-box { width:20px; height:20px; border:2px solid var(--border); border-radius:3px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; transition:all 0.2s; }
+.check-item.done .check-box { background:var(--green); border-color:var(--green); }
+.checkmark { font-size:12px; color:#000; display:none; }
+.check-item.done .checkmark { display:block; }
+.check-text { font-size:13px; line-height:1.6; }
+.check-item.done .check-text { color:var(--muted); text-decoration:line-through; }
+
+.nav-links { display:flex; gap:12px; margin-top:28px; padding-top:24px; border-top:1px solid var(--border); }
+.nav-btn { background:var(--surface); border:1px solid var(--border); color:var(--text); padding:12px 20px; border-radius:3px; cursor:pointer; font-family:'Space Grotesk',sans-serif; font-size:13px; font-weight:500; text-decoration:none; display:inline-flex; align-items:center; gap:8px; transition:border-color 0.2s; }
+.nav-btn:hover { border-color:var(--accent); }
+
+@media (max-width:600px) { .platform-stats { grid-template-columns:repeat(2,1fr); } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="day-label">// KUN 03 — LOAD BOARDS</div>
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" style="width:10%"></div></div>
+    <div class="progress-text">3/30</div>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-kicker">DISPATCH ACADEMY · 30-KUNLIK DASTUR</div>
+  <h1>Load Boards —<br><span class="hl">Yuk Topish Platformalari</span></h1>
+  <p>Dispatcher sifatida kun davomida eng ko'p vaqtingni shu platformalarda o'tkazasan. DAT, Truckstop, 123Loadboard — bularni ko'z yumib ishlata olishing kerak.</p>
+  <div class="meta-row">
+    <div class="meta-item"><div class="meta-dot"></div> 3 ta asosiy platform</div>
+    <div class="meta-item"><div class="meta-dot" style="background:var(--blue)"></div> Load qanday o'qiladi</div>
+    <div class="meta-item"><div class="meta-dot" style="background:var(--green)"></div> 30 ta yangi vocab</div>
+  </div>
+</div>
+
+<div class="tabs-wrap">
+  <button class="tab active" onclick="switchTab('nazariya', this)">📋 Platformalar</button>
+  <button class="tab" onclick="switchTab('anatomy', this)">🔍 Load Anatomiyasi</button>
+  <button class="tab" onclick="switchTab('vocab', this)">🔤 30 Vocab</button>
+  <button class="tab" onclick="switchTab('quiz', this)">🎯 Test</button>
+  <button class="tab" onclick="switchTab('checklist', this)">✅ Kun Yakuni</button>
+</div>
+
+<div class="content">
+
+  <!-- PLATFORMALAR -->
+  <div class="panel active" id="panel-nazariya">
+
+    <div class="sh">LOAD BOARD NIMA?</div>
+
+    <div class="info-card">
+      <h3><div class="ic-icon">💡</div> Oddiy tushuntirish</h3>
+      <p>Load board — bu <strong>yuk bozori</strong>. Xuddi OLX ga o'xshaydi, lekin OLX'da tovar sotiladi, bu yerda <strong>yuk tashish buyurtmalari</strong> joylashtiriladi. Broker yuk chiqaradi, dispatcher (sen) o'sha yukni ko'rib, driverga mos kelganini olasan va broker bilan narx kelishasan. Kuniga <strong>millionlab load</strong> joylashtiriladi.</p>
+    </div>
+
+    <div class="sh">3 TA ASOSIY PLATFORM</div>
+
+    <div class="platform-card">
+      <div class="platform-header">
+        <div>
+          <div class="platform-name">🥇 DAT Load Board</div>
+          <div class="platform-sub">dat.com · ENG KATTA · 1978 YILDAN</div>
+        </div>
+        <div class="platform-badge pb-1">BIRINCHI O'RGAN</div>
+      </div>
+      <div class="platform-body">
+        <div class="platform-desc">AQSHdagi eng katta load board. Kuniga 1 million+ load joylashtiriladi. Aksariyat brokerlar DAT ishlatadi. Dispatcher sifatida DAT bilmasang — ishlay olmaysan. Bepul trial bor, ro'yxatdan o't.</div>
+        <div class="platform-stats">
+          <div class="ps-item"><div class="ps-label">NARX</div><div class="ps-val" style="color:var(--yellow);">$45–150/oy</div></div>
+          <div class="ps-item"><div class="ps-label">LOAD/KUN</div><div class="ps-val" style="color:var(--green);">1M+</div></div>
+          <div class="ps-item"><div class="ps-label">TRIAL</div><div class="ps-val" style="color:var(--green);">Bor ✓</div></div>
+        </div>
+        <div class="platform-tips">
+          <div class="tip-item"><span class="tip-icon">→</span> Rate analytics — qaysi lane qancha to'laydi, real vaqtda ko'rasan</div>
+          <div class="tip-item"><span class="tip-icon">→</span> Broker credit score — ishonchli broker yoki yoʻqligini ko'rasan</div>
+          <div class="tip-item"><span class="tip-icon">→</span> Mobile app bor — iPhone dan ham ishlasa bo'ladi</div>
+          <div class="tip-item"><span class="tip-icon">→</span> dat.com ga bor, "Free Trial" bosib ro'yxatdan o't</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="platform-card">
+      <div class="platform-header">
+        <div>
+          <div class="platform-name">🥈 Truckstop (ITS)</div>
+          <div class="platform-sub">truckstop.com · IKKINCHI ENG KATTA</div>
+        </div>
+        <div class="platform-badge pb-2">MUHIM</div>
+      </div>
+      <div class="platform-body">
+        <div class="platform-desc">DAT'dan keyin ikkinchi o'rinda. Ko'plab dispatcherlar ikkalasini birga ishlatadi — chunki ba'zi loadlar faqat Truckstop'da bo'ladi. Interface DAT'ga o'xshaydi, o'rganish oson.</div>
+        <div class="platform-stats">
+          <div class="ps-item"><div class="ps-label">NARX</div><div class="ps-val" style="color:var(--yellow);">$39–120/oy</div></div>
+          <div class="ps-item"><div class="ps-label">LOAD/KUN</div><div class="ps-val" style="color:var(--green);">500K+</div></div>
+          <div class="ps-item"><div class="ps-label">TRIAL</div><div class="ps-val" style="color:var(--green);">Bor ✓</div></div>
+        </div>
+        <div class="platform-tips">
+          <div class="tip-item"><span class="tip-icon">→</span> Carrier monitoring tool — driveringni track qilish imkoni</div>
+          <div class="tip-item"><span class="tip-icon">→</span> Fuel optimizer — eng arzon yoqilg'i stansiyasini ko'rsatadi</div>
+          <div class="tip-item"><span class="tip-icon">→</span> Keyinroq DAT bilan birga ishlatasan</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="platform-card">
+      <div class="platform-header">
+        <div>
+          <div class="platform-name">🥉 123Loadboard</div>
+          <div class="platform-sub">123loadboard.com · ARZON · YANGI BOSHLOVCHILAR UCHUN</div>
+        </div>
+        <div class="platform-badge pb-3">BOSHLASH UCHUN</div>
+      </div>
+      <div class="platform-body">
+        <div class="platform-desc">Eng arzon variant. Yangi dispatcher uchun ideal — chunki bepul rejasi bor! Load soni DAT'dan kam, lekin o'rganish uchun yetarli. Interface oddiyroq, tushunish oson.</div>
+        <div class="platform-stats">
+          <div class="ps-item"><div class="ps-label">NARX</div><div class="ps-val" style="color:var(--green);">Bepul / $35/oy</div></div>
+          <div class="ps-item"><div class="ps-label">LOAD/KUN</div><div class="ps-val" style="color:var(--yellow);">200K+</div></div>
+          <div class="ps-item"><div class="ps-label">TRIAL</div><div class="ps-val" style="color:var(--green);">Bepul plan ✓</div></div>
+        </div>
+        <div class="platform-tips">
+          <div class="tip-item"><span class="tip-icon">→</span> Hoziroq 123loadboard.com ga bor, bepul ro'yxatdan o't</div>
+          <div class="tip-item"><span class="tip-icon">→</span> Interface o'rgan — keyinroq DAT ga o'tish oson bo'ladi</div>
+          <div class="tip-item"><span class="tip-icon">→</span> Mileage calculator bor — masofa hisoblash uchun</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sh">BUGUNGI AMALIY VAZIFA</div>
+
+    <div class="info-card" style="border-color:rgba(255,77,0,0.3);">
+      <h3><div class="ic-icon" style="background:rgba(255,77,0,0.2)">🎯</div> Hoziroq qil</h3>
+      <p>
+        1. <strong>123loadboard.com</strong> ga bor — bepul ro'yxatdan o't<br><br>
+        2. Loadlar ro'yxatini och — 10 ta load ko'r<br><br>
+        3. Har bir load'da: <strong>origin, destination, rate, truck type</strong> ni o'qi<br><br>
+        4. Bir load'ni tanlаb, uning ma'lumotlarini yozib ol<br><br>
+        Bu amaliyot — ertaga broker bilan gaplashganda real load haqida gapirishga tayyorlaydi.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- LOAD ANATOMIYASI -->
+  <div class="panel" id="panel-anatomy">
+    <div class="sh">LOAD QANDAY KO'RINADI?</div>
+
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Load board'da har bir yuk quyidagi ma'lumotlarni ko'rsatadi. Bularni tez o'qiy olishing kerak.</p>
+
+    <div class="load-box">
+      <div class="load-row">
+        <div>
+          <div class="load-field">ORIGIN</div>
+          <div class="load-value">Chicago, IL</div>
+          <div class="load-explain">Yuk qayerdan olinadi — shahar va shtat</div>
+        </div>
+      </div>
+      <div class="load-row">
+        <div>
+          <div class="load-field">DESTINATION</div>
+          <div class="load-value">Atlanta, GA</div>
+          <div class="load-explain">Yuk qayerga yetkaziladi</div>
+        </div>
+      </div>
+      <div class="load-row">
+        <div>
+          <div class="load-field">MILES</div>
+          <div class="load-value">716 mi</div>
+          <div class="load-explain">Origin dan destination gacha masofa</div>
+        </div>
+      </div>
+      <div class="load-row">
+        <div>
+          <div class="load-field">RATE</div>
+          <div class="load-value">$2,400</div>
+          <div class="load-explain">Broker taklif qilayotgan narx (negotiable!)</div>
+        </div>
+      </div>
+      <div class="load-row">
+        <div>
+          <div class="load-field">RPM</div>
+          <div class="load-value">$3.35/mi</div>
+          <div class="load-explain">Rate per mile — har milya uchun pul</div>
+        </div>
+      </div>
+      <div class="load-row">
+        <div>
+          <div class="load-field">EQUIPMENT</div>
+          <div class="load-value">Van (Dry Van)</div>
+          <div class="load-explain">Kerakli truck turi</div>
+        </div>
+      </div>
+      <div class="load-row">
+        <div>
+          <div class="load-field">WEIGHT</div>
+          <div class="load-value">38,000 lbs</div>
+          <div class="load-explain">Yuk og'irligi — max 44,000 lbs</div>
+        </div>
+      </div>
+      <div class="load-row">
+        <div>
+          <div class="load-field">PICKUP DATE</div>
+          <div class="load-value">Tomorrow 08:00</div>
+          <div class="load-explain">Yukni olish vaqti</div>
+        </div>
+      </div>
+      <div class="load-row">
+        <div>
+          <div class="load-field">DELIVERY DATE</div>
+          <div class="load-value">In 2 days 14:00</div>
+          <div class="load-explain">Yetkazish muddati</div>
+        </div>
+      </div>
+      <div class="load-row">
+        <div>
+          <div class="load-field">LOAD TYPE</div>
+          <div class="load-value">Drop & Hook</div>
+          <div class="load-explain">Driver kutmaydi — tayyor pritsepni oladi</div>
+        </div>
+      </div>
+      <div class="load-row">
+        <div>
+          <div class="load-field">BROKER</div>
+          <div class="load-value">Echo Global ⭐⭐⭐⭐⭐</div>
+          <div class="load-explain">Broker nomi va rating — ishonchliligini ko'rsat</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sh">YAXSHI LOAD VS YOMON LOAD</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="info-card" style="border-color:rgba(0,230,118,0.3);">
+        <h3><div class="ic-icon" style="background:rgba(0,230,118,0.12)">✅</div> Yaxshi load</h3>
+        <p>
+          → RPM $2.8+ (dry van)<br>
+          → Drop & Hook (kutish yo'q)<br>
+          → No touch freight<br>
+          → 5 yulduzli broker<br>
+          → Pickup ertaga yoki keyingi kun<br>
+          → Masofa 500+ mile
+        </p>
+      </div>
+      <div class="info-card" style="border-color:rgba(255,77,0,0.3);">
+        <h3><div class="ic-icon" style="background:rgba(255,77,0,0.12)">❌</div> Ehtiyot bo'l</h3>
+        <p>
+          → RPM $1.5 dan past<br>
+          → Live unload (driver kutadi)<br>
+          → Touch freight (driver yuklaydi)<br>
+          → Yangi, reyingsi broker<br>
+          → Bugun pickup<br>
+          → Deadhead 200+ mile
+        </p>
+      </div>
+    </div>
+
+    <div class="info-card" style="margin-top:12px;">
+      <h3><div class="ic-icon">💡</div> Broker credit score — muhim!</h3>
+      <p>DAT va Truckstop'da har bir brokerning <strong>kredit reytingi</strong> ko'rsatiladi. Bu reyting <strong>to'lov muddati va ishonchliligi</strong>ni ko'rsatadi. <strong>Yangi dispatcher uchun qoida:</strong> faqat <strong>4-5 yulduzli broker</strong> bilan ishla. Past reyingli brokerlar to'lovni kechiktiradi yoki umuman to'lamaydi.</p>
+    </div>
+  </div>
+
+  <!-- VOCAB -->
+  <div class="panel" id="panel-vocab">
+    <div class="vocab-controls">
+      <button class="vocab-mode-btn active" onclick="setMode('list', this)">📋 RO'YXAT</button>
+      <button class="vocab-mode-btn" onclick="setMode('flash', this)">🃏 FLASHCARD</button>
+      <div class="vocab-counter" id="learnedCount">0/30 yodlandi</div>
+    </div>
+    <div id="vocab-list-wrap"><div class="vocab-list" id="vocabList"></div></div>
+    <div class="flashcard-wrap" id="vocab-flash-wrap">
+      <div class="flashcard" id="mainCard" onclick="flipCard()">
+        <div class="flashcard-inner">
+          <div class="fc-face fc-front">
+            <div class="fc-label">INGLIZCHA SO'Z</div>
+            <div class="fc-term" id="fcTerm">—</div>
+            <div class="fc-hint">bosing → tarjimasi</div>
+          </div>
+          <div class="fc-face fc-back">
+            <div class="fc-label">MA'NOSI</div>
+            <div class="fc-def" id="fcDef">—</div>
+            <div class="fc-uz" id="fcUz">—</div>
+            <div class="fc-ex" id="fcEx">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="fc-nav">
+        <button class="fc-btn" onclick="fcPrev()">← Oldingi</button>
+        <div class="fc-pos" id="fcPos">1 / 30</div>
+        <button class="fc-btn" onclick="fcNext()">Keyingi →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="panel" id="panel-quiz">
+    <div class="sh">BILIMNI TEKSHIR</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:24px;">10 ta savol. Load board va vocab'dan.</p>
+    <div class="quiz-wrap" id="quizWrap">
+      <div class="quiz-q" id="quizQ"></div>
+      <div class="quiz-options" id="quizOpts"></div>
+      <div class="quiz-feedback" id="quizFeedback"></div>
+      <button class="quiz-next-btn" id="quizNext" onclick="nextQuestion()">Keyingi →</button>
+    </div>
+    <div class="quiz-score" id="quizScore">
+      <div class="score-num" id="scoreNum">0</div>
+      <div class="score-label">to'g'ri / 10 ta</div>
+      <div class="score-msg" id="scoreMsg"></div>
+      <button class="fc-btn" style="margin-top:20px;" onclick="restartQuiz()">Qayta</button>
+    </div>
+  </div>
+
+  <!-- CHECKLIST -->
+  <div class="panel" id="panel-checklist">
+    <div class="sh">BUGUNGI VAZIFALAR</div>
+    <div class="checklist" id="checklistEl"></div>
+    <div class="info-card" style="margin-top:24px;">
+      <h3><div class="ic-icon">🌙</div> Ertaga — KUN 4: Documents & Paperwork</h3>
+      <p>Rate Confirmation, BOL, POD, Invoice — dispatcher uchun eng muhim hujjatlar. Bularni bilmasang broker bilan ishlayolmaysan. Ertaga hammasi aniq bo'ladi!</p>
+    </div>
+    <div class="nav-links">
+      <a href="kun2-truck-types.html" class="nav-btn">← KUN 2</a>
+      <a href="kun4-documents.html" class="nav-btn">KUN 4 →</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const vocab30 = [
+  { term:"Load Board", uz:"Yuk platformasi / Yuk bozori", def:"Brokerlar yuk joylashtiradigan, dispatcherlar yuk topadigan internet platformasi. DAT, Truckstop.", ex:'"I found this load on the DAT load board."' },
+  { term:"DAT", uz:"AQSHning eng katta yuk platformasi", def:"Digital platform — kuniga 1 million+ load. Har dispatcher bilishi shart.", ex:'"DAT is the #1 load board in the USA."' },
+  { term:"Truckstop", uz:"Ikkinchi yirik yuk platformasi", def:"truckstop.com — DAT'dan keyin ikkinchi o'rinda. Ko'p dispatcher ikkalasini birga ishlatadi.", ex:'"Some loads are only posted on Truckstop."' },
+  { term:"123Loadboard", uz:"Arzon — yangi boshlovchilar uchun platform", def:"Bepul rejasi bor load board. O'rganish uchun ideal.", ex:'"Start with 123loadboard.com — it is free."' },
+  { term:"Origin", uz:"Jo'natish joyi — yukni olish manzili", def:"Yuk qayerdan olinadi. Chicago, IL — bu origin.", ex:'"Origin is Chicago, pickup tomorrow at 8 AM."' },
+  { term:"Destination", uz:"Yetkazish manzili", def:"Yuk qayerga olib boriladi. Atlanta, GA — bu destination.", ex:'"Destination is Atlanta, GA."' },
+  { term:"Post a Load", uz:"Yuk e'lonini joylashtirish", def:"Broker load board'ga yangi yuk e'lonini chiqarishi.", ex:'"Broker just posted a new load on DAT."' },
+  { term:"Search Loads", uz:"Yuk qidirish", def:"Dispatcher load board'da o'zining truckiga mos yuk izlashi.", ex:'"I am searching loads from Chicago to Atlanta."' },
+  { term:"Available Loads", uz:"Mavjud yuklar", def:"Hozirda olib ketishga tayyor bo'lgan yuklar ro'yxati.", ex:'"There are 200 available loads on this lane."' },
+  { term:"Rate Analytics", uz:"Narx tahlili", def:"DAT'da qaysi lane'da qancha to'lanishini ko'rsatuvchi vosita.", ex:'"DAT rate analytics shows $3.2/mile on this lane."' },
+  { term:"Broker Credit Score", uz:"Broker kredit reytingi", def:"Brokerning to'lov ishonchliligi. Yuqori = yaxshi. Faqat 4-5 yulduzli bilan ishlash tavsiya.", ex:'"Always check broker credit score before booking."' },
+  { term:"Load Age", uz:"Yuk e'lonining yoshi", def:"Load qancha vaqt oldin joylashtirilgan. Eski load = broker muhtoj = narxni oshirsa bo'ladi.", ex:'"This load is 3 hours old — broker may be flexible."' },
+  { term:"Filter", uz:"Saralash / Filter", def:"Load boardda truck turi, masofa, narx bo'yicha yukni toraytirish.", ex:'"Filter by dry van and minimum $2.5/mile."' },
+  { term:"Mileage", uz:"Masofa (milya)", def:"Origin dan destination gacha bo'lgan masofа. RPM hisoblash uchun kerak.", ex:'"Mileage from Chicago to Atlanta is 716 miles."' },
+  { term:"Drop and Hook", uz:"Ol va ket — kutish yo'q", def:"Driver tayyor yuklangan pritsepni oladi, bo'shini qoldiradi. Kutish yo'q — eng qulay load turi.", ex:'"Drop and hook — driver does not have to wait."' },
+  { term:"Live Load", uz:"Kutib turish bilan yuklash", def:"Driver yuklanishi kutishi kerak. Ko'pincha 1-3 soat. Detention to'lanishi kerak.", ex:'"Live load — driver will wait 2 hours at the dock."' },
+  { term:"Live Unload", uz:"Kutib turish bilan tushirish", def:"Driver yukni tushirishni kutadi. Yetkazish joyida vaqt ketadi.", ex:'"Live unload expected — 90 minutes at receiver."' },
+  { term:"Preloaded", uz:"Oldindan yuklangan", def:"Yuk allaqachon yuklab qo'yilgan. Driver keladi va darhol ketadi.", ex:'"Trailer is preloaded and ready to go."' },
+  { term:"Dock", uz:"Yuklash / tushirish platformasi", def:"Ombordagi yuklab-tushirish joyi. Truck shu yerga orqasi bilan turadi.", ex:'"Driver needs to back into dock number 7."' },
+  { term:"Lumper", uz:"Yuk ko'taruvchi ishchi", def:"Omborda yukni ko'tarishga yordam beruvchi ishchi. Ba'zida shipper to'laydi, ba'zida driver.", ex:'"Lumper fee is $150, shipper will pay."' },
+  { term:"FCFS", uz:"Kim avval kelsa — o'sha birinchi", def:"First Come First Served. Pickup vaqti aniq emas, kim avval kelsa yukni oladi.", ex:'"Pickup is FCFS — get there early."' },
+  { term:"Appointment", uz:"Belgilangan vaqt — tayinlash", def:"Pickup yoki delivery uchun aniq vaqt belgilanishi. Kechikmaslik kerak.", ex:'"Driver has a 10 AM appointment at the shipper."' },
+  { term:"Hazmat Loads", uz:"Xavfli yuk e'lonlari", def:"HAZMAT sertifikati talab qiladigan yuklar. Filter'da alohida ko'rsatiladi.", ex:'"Hazmat loads require special certification."' },
+  { term:"Partial Load", uz:"Qisman yuk — bo'sh joy bor", def:"Trailer to'liq emas. LTL yoki partial — dispatcher kamroq shug'ullanadi.", ex:'"This is a partial load — 20 ft of space used."' },
+  { term:"Full Truckload (FTL)", uz:"To'liq truck yuki", def:"Butun trailerni egallagan yuk. Dispatcher ko'proq FTL bilan ishlaydi.", ex:'"We only dispatch full truckload shipments."' },
+  { term:"Lane History", uz:"Yo'nalish tarixi", def:"DAT'da ma'lum lane'da oxirgi 3-30 kunda qancha to'langanini ko'rsatadi.", ex:'"Lane history shows average $2.8/mile this week."' },
+  { term:"Book It Now", uz:"Darhol zablanirovka", def:"Ba'zi load board'larda narxni kelishmasdan darhol olish tugmasi.", ex:'"Book it now at $2,600 — no negotiation needed."' },
+  { term:"Reload", uz:"Qayta yuk — ketishda ham yuk topish", def:"Driver yetkazib bo'lgandan keyin shu shahardan yangi yuk topish.", ex:'"Good news — I found a reload from Atlanta."' },
+  { term:"Deadhead Miles", uz:"Bo'sh millar — yuqsiz masofa", def:"Yuk olmay bosilgan milya. Dispatcher buni minimizatsiya qilishi kerak.", ex:'"150 deadhead miles to pickup — not ideal."' },
+  { term:"Backhaul", uz:"Qaytish yuki", def:"Driver yetkazib bo'lib, uyiga qaytayotganda olgan yuk. Ko'pincha arzonroq.", ex:'"Found a backhaul load from Atlanta to Chicago."' },
+];
+
+let learned = [];
+try { learned = JSON.parse(localStorage.getItem('kun3learned') || '[]'); } catch(e){}
+
+function renderList() {
+  document.getElementById('vocabList').innerHTML = vocab30.map((v, i) => `
+    <div class="vocab-item ${learned.includes(i)?'learned':''}" id="vi${i}">
+      <div class="vocab-n">${String(i+1).padStart(2,'0')}</div>
+      <div class="vocab-body">
+        <div class="vocab-term">${v.term}</div>
+        <div class="vocab-uz">🇺🇿 ${v.uz}</div>
+        <div class="vocab-def-text">${v.def}</div>
+        <div class="vocab-example">${v.ex}</div>
+      </div>
+      <button class="learn-btn" onclick="toggleLearn(${i})">✓</button>
+    </div>
+  `).join('');
+  updateCount();
+}
+
+function toggleLearn(i) {
+  if (learned.includes(i)) learned = learned.filter(x=>x!==i);
+  else learned.push(i);
+  try { localStorage.setItem('kun3learned', JSON.stringify(learned)); } catch(e){}
+  document.getElementById('vi'+i).classList.toggle('learned');
+  updateCount();
+}
+
+function updateCount() { document.getElementById('learnedCount').textContent = learned.length+'/30 yodlandi'; }
+renderList();
+
+let fcIdx=0, fcFlipped=false;
+function renderFC() {
+  const v=vocab30[fcIdx];
+  document.getElementById('fcTerm').textContent=v.term;
+  document.getElementById('fcDef').textContent=v.def;
+  document.getElementById('fcUz').textContent='🇺🇿 '+v.uz;
+  document.getElementById('fcEx').textContent=v.ex;
+  document.getElementById('fcPos').textContent=(fcIdx+1)+' / '+vocab30.length;
+  document.getElementById('mainCard').classList.remove('flipped');
+  fcFlipped=false;
+}
+function flipCard() { fcFlipped=!fcFlipped; document.getElementById('mainCard').classList.toggle('flipped',fcFlipped); }
+function fcNext() { fcIdx=(fcIdx+1)%vocab30.length; renderFC(); }
+function fcPrev() { fcIdx=(fcIdx-1+vocab30.length)%vocab30.length; renderFC(); }
+renderFC();
+
+function setMode(mode,btn) {
+  document.querySelectorAll('.vocab-mode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(mode==='list') { document.getElementById('vocab-list-wrap').style.display=''; document.getElementById('vocab-flash-wrap').classList.remove('active'); }
+  else { document.getElementById('vocab-list-wrap').style.display='none'; document.getElementById('vocab-flash-wrap').classList.add('active'); renderFC(); }
+}
+
+let quizQuestions=[], currentQ=0, score=0, answered=false;
+function buildQuiz() {
+  quizQuestions=[];
+  const pool=[...vocab30].sort(()=>Math.random()-0.5).slice(0,10);
+  pool.forEach(v=>{
+    const others=vocab30.filter(x=>x.term!==v.term).sort(()=>Math.random()-0.5).slice(0,3).map(x=>x.uz);
+    quizQuestions.push({q:`"${v.term}" — o'zbekcha ma'nosi?`,correct:v.uz,opts:[v.uz,...others].sort(()=>Math.random()-0.5),def:v.def});
+  });
+  currentQ=0; score=0; answered=false; renderQuestion();
+}
+function renderQuestion() {
+  if(currentQ>=quizQuestions.length){showScore();return;}
+  const q=quizQuestions[currentQ];
+  document.getElementById('quizQ').textContent=`${currentQ+1}/10 — ${q.q}`;
+  document.getElementById('quizFeedback').textContent='';
+  document.getElementById('quizNext').classList.remove('show');
+  answered=false;
+  document.getElementById('quizOpts').innerHTML=q.opts.map(o=>`<button class="quiz-opt" onclick="answerQ('${o.replace(/'/g,"\\'")}',this)">${o}</button>`).join('');
+}
+function answerQ(ans,btn) {
+  if(answered)return; answered=true;
+  const q=quizQuestions[currentQ];
+  document.querySelectorAll('.quiz-opt').forEach(b=>{if(b.textContent===q.correct)b.classList.add('correct');});
+  if(ans===q.correct){score++;document.getElementById('quizFeedback').textContent='✓ To\'g\'ri! '+q.def;}
+  else{btn.classList.add('wrong');document.getElementById('quizFeedback').textContent='✗ Noto\'g\'ri. To\'g\'risi: '+q.correct;}
+  document.getElementById('quizNext').classList.add('show');
+}
+function nextQuestion(){currentQ++;renderQuestion();}
+function showScore(){
+  document.getElementById('quizWrap').style.display='none';
+  document.getElementById('quizScore').classList.add('show');
+  document.getElementById('scoreNum').textContent=score+'/10';
+  document.getElementById('scoreMsg').textContent=['Yana bir bor! 💪','Yaxshi! 🔥','Zo\'r! 👍','Ajoyib! 🎯','PERFECT! 🚀'][Math.min(Math.floor(score/2),4)];
+}
+function restartQuiz(){document.getElementById('quizWrap').style.display='';document.getElementById('quizScore').classList.remove('show');buildQuiz();}
+buildQuiz();
+
+const tasks=[
+  'DAT nima ekanini va nima uchun muhimligini tushundim',
+  'Truckstop va 123Loadboard haqida bildim',
+  '123loadboard.com ga kirdim va loadlarni ko\'rdim',
+  'Load anatomiyasini o\'qidim (origin, destination, rate, RPM...)',
+  'Yaxshi load vs yomon load farqini tushundim',
+  'Broker credit score nima ekanini bildim',
+  'Drop & Hook vs Live Load farqini tushundim',
+  '30 ta vocab ro\'yxatini o\'qidim',
+  'Flashcard bilan mashq qildim',
+  'Testni bajardim',
+];
+let checked=[];
+try{checked=JSON.parse(localStorage.getItem('kun3check')||'[]');}catch(e){}
+function renderChecklist(){
+  document.getElementById('checklistEl').innerHTML=tasks.map((t,i)=>`
+    <div class="check-item ${checked.includes(i)?'done':''}" onclick="toggleCheck(${i})">
+      <div class="check-box"><span class="checkmark">✓</span></div>
+      <div class="check-text">${t}</div>
+    </div>
+  `).join('');
+}
+function toggleCheck(i){
+  if(checked.includes(i))checked=checked.filter(x=>x!==i);
+  else checked.push(i);
+  try{localStorage.setItem('kun3check',JSON.stringify(checked));}catch(e){}
+  renderChecklist();
+}
+renderChecklist();
+
+function switchTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
