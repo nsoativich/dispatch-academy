@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KUN 4 — Documents & Paperwork</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  --bg: #080808;
+  --surface: #111;
+  --surface2: #181818;
+  --border: #1e1e1e;
+  --accent: #ff4d00;
+  --blue: #00aaff;
+  --green: #00e676;
+  --yellow: #ffd600;
+  --text: #e8e6e0;
+  --muted: #555;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Space Grotesk',sans-serif; min-height:100vh; }
+
+.topbar { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--bg); z-index:50; }
+.day-label { font-family:'Space Mono',monospace; font-size:11px; color:var(--accent); letter-spacing:2px; }
+.progress-wrap { display:flex; align-items:center; gap:10px; }
+.progress-track { width:120px; height:3px; background:var(--border); border-radius:2px; overflow:hidden; }
+.progress-fill { height:100%; background:var(--accent); border-radius:2px; }
+.progress-text { font-family:'Space Mono',monospace; font-size:10px; color:var(--muted); }
+
+.hero { padding:40px 20px 28px; border-bottom:1px solid var(--border); max-width:860px; margin:0 auto; }
+.hero-kicker { font-family:'Space Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:2px; margin-bottom:12px; }
+.hero h1 { font-size:clamp(28px,7vw,54px); font-weight:700; letter-spacing:-1.5px; line-height:1; margin-bottom:14px; }
+.hero h1 .hl { color:var(--accent); }
+.hero p { font-size:14px; color:#777; line-height:1.7; max-width:480px; }
+.meta-row { display:flex; gap:20px; margin-top:24px; flex-wrap:wrap; }
+.meta-item { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); }
+.meta-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); }
+
+.tabs-wrap { border-bottom:1px solid var(--border); padding:0 20px; display:flex; overflow-x:auto; scrollbar-width:none; max-width:860px; margin:0 auto; }
+.tabs-wrap::-webkit-scrollbar { display:none; }
+.tab { padding:13px 18px; font-size:12px; font-weight:500; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; background:none; border-top:none; border-left:none; border-right:none; font-family:'Space Grotesk',sans-serif; transition:color 0.2s; }
+.tab:hover { color:var(--text); }
+.tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+
+.content { max-width:860px; margin:0 auto; padding:28px 20px 60px; }
+.panel { display:none; }
+.panel.active { display:block; }
+
+.sh { font-family:'Space Mono',monospace; font-size:10px; color:var(--accent); letter-spacing:2px; margin-bottom:14px; margin-top:32px; display:flex; align-items:center; gap:10px; }
+.sh::after { content:''; flex:1; height:1px; background:var(--border); }
+.sh:first-child { margin-top:0; }
+
+.info-card { background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:20px; margin-bottom:12px; }
+.info-card h3 { font-size:15px; font-weight:600; margin-bottom:10px; display:flex; align-items:center; gap:10px; }
+.ic-icon { width:28px; height:28px; background:rgba(255,77,0,0.12); border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:14px; }
+.info-card p { font-size:13px; color:#888; line-height:1.75; }
+.info-card p strong { color:var(--text); }
+
+/* DOC CARDS */
+.doc-card { background:var(--surface); border:1px solid var(--border); border-radius:4px; margin-bottom:16px; overflow:hidden; }
+.doc-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.doc-title { font-size:17px; font-weight:700; }
+.doc-abbr { font-family:'Space Mono',monospace; font-size:11px; color:var(--muted); margin-top:3px; }
+.doc-badge { font-size:10px; padding:4px 10px; border-radius:2px; font-family:'Space Mono',monospace; }
+.db-critical { background:rgba(255,77,0,0.15); color:var(--accent); }
+.db-important { background:rgba(0,170,255,0.15); color:var(--blue); }
+.db-useful { background:rgba(0,230,118,0.15); color:var(--green); }
+.doc-body { padding:20px; }
+.doc-desc { font-size:13px; color:#888; line-height:1.7; margin-bottom:14px; }
+.doc-flow { display:flex; flex-direction:column; gap:8px; }
+.doc-step { display:flex; gap:10px; font-size:13px; color:#888; }
+.step-num { font-family:'Space Mono',monospace; font-size:11px; color:var(--accent); min-width:20px; margin-top:1px; }
+
+/* TIMELINE */
+.timeline { display:flex; flex-direction:column; gap:0; }
+.tl-item { display:flex; gap:16px; }
+.tl-left { display:flex; flex-direction:column; align-items:center; min-width:40px; }
+.tl-dot { width:12px; height:12px; border-radius:50%; background:var(--accent); flex-shrink:0; margin-top:4px; }
+.tl-line { width:2px; background:var(--border); flex:1; margin:4px 0; min-height:20px; }
+.tl-item:last-child .tl-line { display:none; }
+.tl-content { padding-bottom:20px; }
+.tl-title { font-size:14px; font-weight:600; margin-bottom:4px; }
+.tl-desc { font-size:12px; color:#666; line-height:1.6; }
+.tl-doc { display:inline-block; margin-top:6px; font-size:10px; padding:2px 8px; border-radius:2px; font-family:'Space Mono',monospace; background:rgba(255,77,0,0.12); color:var(--accent); }
+
+/* VOCAB */
+.vocab-controls { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
+.vocab-mode-btn { font-family:'Space Mono',monospace; font-size:11px; padding:7px 14px; border-radius:2px; border:1px solid var(--border); background:none; color:var(--muted); cursor:pointer; transition:all 0.2s; }
+.vocab-mode-btn.active,.vocab-mode-btn:hover { border-color:var(--accent); color:var(--accent); background:rgba(255,77,0,0.07); }
+.vocab-counter { margin-left:auto; font-family:'Space Mono',monospace; font-size:11px; color:var(--muted); }
+.vocab-list { display:flex; flex-direction:column; gap:8px; }
+.vocab-item { background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:14px 18px; display:flex; align-items:flex-start; gap:14px; transition:border-color 0.15s; }
+.vocab-item.learned { border-color:var(--green)!important; }
+.vocab-n { font-family:'Space Mono',monospace; font-size:10px; color:var(--muted); min-width:24px; margin-top:2px; }
+.vocab-body { flex:1; }
+.vocab-term { font-size:14px; font-weight:600; color:var(--blue); margin-bottom:3px; font-family:'Space Mono',monospace; }
+.vocab-uz { font-size:12px; color:var(--muted); margin-bottom:4px; }
+.vocab-def-text { font-size:12px; color:#777; line-height:1.6; }
+.vocab-example { font-size:11px; color:#444; margin-top:5px; font-style:italic; }
+.learn-btn { font-size:18px; cursor:pointer; opacity:0.3; transition:opacity 0.2s; background:none; border:none; color:var(--green); padding:0; }
+.learn-btn:hover { opacity:0.7; }
+.vocab-item.learned .learn-btn { opacity:1; }
+
+.flashcard-wrap { display:none; flex-direction:column; align-items:center; gap:20px; }
+.flashcard-wrap.active { display:flex; }
+.flashcard { width:100%; max-width:480px; aspect-ratio:3/2; perspective:1000px; cursor:pointer; }
+.flashcard-inner { width:100%; height:100%; position:relative; transform-style:preserve-3d; transition:transform 0.5s ease; }
+.flashcard.flipped .flashcard-inner { transform:rotateY(180deg); }
+.fc-face { position:absolute; width:100%; height:100%; backface-visibility:hidden; background:var(--surface); border:1px solid var(--border); border-radius:4px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:28px; text-align:center; }
+.fc-back { transform:rotateY(180deg); }
+.fc-label { font-family:'Space Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:2px; margin-bottom:16px; }
+.fc-term { font-family:'Space Mono',monospace; font-size:22px; font-weight:700; color:var(--blue); margin-bottom:8px; }
+.fc-hint { font-size:12px; color:#333; }
+.fc-def { font-size:13px; color:var(--text); line-height:1.6; margin-bottom:10px; }
+.fc-uz { font-size:13px; color:var(--accent); font-weight:600; }
+.fc-ex { font-size:11px; color:var(--muted); margin-top:8px; font-style:italic; }
+.fc-nav { display:flex; gap:12px; align-items:center; }
+.fc-btn { background:var(--surface); border:1px solid var(--border); color:var(--text); padding:10px 20px; border-radius:3px; cursor:pointer; font-family:'Space Grotesk',sans-serif; font-size:13px; transition:border-color 0.2s; }
+.fc-btn:hover { border-color:var(--accent); }
+.fc-pos { font-family:'Space Mono',monospace; font-size:12px; color:var(--muted); min-width:60px; text-align:center; }
+
+.quiz-wrap { max-width:520px; }
+.quiz-q { font-size:15px; font-weight:600; margin-bottom:20px; line-height:1.5; }
+.quiz-options { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+.quiz-opt { background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:14px 18px; cursor:pointer; font-size:13px; text-align:left; color:var(--text); font-family:'Space Grotesk',sans-serif; transition:all 0.15s; }
+.quiz-opt:hover { border-color:var(--blue); }
+.quiz-opt.correct { border-color:var(--green); background:rgba(0,230,118,0.08); color:var(--green); }
+.quiz-opt.wrong { border-color:var(--accent); background:rgba(255,77,0,0.08); color:var(--accent); }
+.quiz-feedback { font-size:13px; color:var(--muted); margin-bottom:16px; min-height:20px; line-height:1.5; }
+.quiz-next-btn { display:none; background:var(--accent); color:#fff; border:none; padding:11px 24px; border-radius:3px; cursor:pointer; font-family:'Space Grotesk',sans-serif; font-size:13px; font-weight:600; }
+.quiz-next-btn.show { display:inline-block; }
+.quiz-score { display:none; text-align:center; padding:40px 20px; }
+.quiz-score.show { display:block; }
+.score-num { font-family:'Space Mono',monospace; font-size:56px; font-weight:700; color:var(--accent); }
+.score-label { font-size:14px; color:var(--muted); margin-top:8px; }
+.score-msg { font-size:16px; margin-top:16px; font-weight:600; }
+
+.checklist { display:flex; flex-direction:column; gap:10px; }
+.check-item { display:flex; gap:14px; align-items:flex-start; background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:16px 18px; cursor:pointer; transition:border-color 0.2s; }
+.check-item.done { border-color:var(--green); }
+.check-box { width:20px; height:20px; border:2px solid var(--border); border-radius:3px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; transition:all 0.2s; }
+.check-item.done .check-box { background:var(--green); border-color:var(--green); }
+.checkmark { font-size:12px; color:#000; display:none; }
+.check-item.done .checkmark { display:block; }
+.check-text { font-size:13px; line-height:1.6; }
+.check-item.done .check-text { color:var(--muted); text-decoration:line-through; }
+
+.nav-links { display:flex; gap:12px; margin-top:28px; padding-top:24px; border-top:1px solid var(--border); }
+.nav-btn { background:var(--surface); border:1px solid var(--border); color:var(--text); padding:12px 20px; border-radius:3px; cursor:pointer; font-family:'Space Grotesk',sans-serif; font-size:13px; font-weight:500; text-decoration:none; display:inline-flex; align-items:center; gap:8px; transition:border-color 0.2s; }
+.nav-btn:hover { border-color:var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="day-label">// KUN 04 — DOCUMENTS & PAPERWORK</div>
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" style="width:13.3%"></div></div>
+    <div class="progress-text">4/30</div>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-kicker">DISPATCH ACADEMY · 30-KUNLIK DASTUR</div>
+  <h1>Hujjatlar —<br><span class="hl">Dispatcher's Bible</span></h1>
+  <p>Hujjatlarni bilmasang dispatcher bo'lolmaysan. Rate Con, BOL, POD, Invoice — bular dispatcher hayotining asosi. Bugun bularni yodlaysan.</p>
+  <div class="meta-row">
+    <div class="meta-item"><div class="meta-dot"></div> 6 ta asosiy hujjat</div>
+    <div class="meta-item"><div class="meta-dot" style="background:var(--blue)"></div> Load jarayoni timeline</div>
+    <div class="meta-item"><div class="meta-dot" style="background:var(--green)"></div> 30 ta yangi vocab</div>
+  </div>
+</div>
+
+<div class="tabs-wrap">
+  <button class="tab active" onclick="switchTab('docs', this)">📄 Hujjatlar</button>
+  <button class="tab" onclick="switchTab('timeline', this)">⏱ Load Timeline</button>
+  <button class="tab" onclick="switchTab('vocab', this)">🔤 30 Vocab</button>
+  <button class="tab" onclick="switchTab('quiz', this)">🎯 Test</button>
+  <button class="tab" onclick="switchTab('checklist', this)">✅ Kun Yakuni</button>
+</div>
+
+<div class="content">
+
+  <!-- DOCS -->
+  <div class="panel active" id="panel-docs">
+
+    <div class="sh">6 TA ASOSIY HUJJAT</div>
+
+    <div class="doc-card">
+      <div class="doc-header">
+        <div>
+          <div class="doc-title">Rate Confirmation</div>
+          <div class="doc-abbr">RATE CON · ENG MUHIM HUJJAT</div>
+        </div>
+        <div class="doc-badge db-critical">KRITIK</div>
+      </div>
+      <div class="doc-body">
+        <div class="doc-desc">Rate Con — broker va carrier o'rtasidagi <strong>shartnoma</strong>. Unda narx, pickup joyi, delivery joyi, sana va shartlar yozilgan. Driver yo'lga chiqishdan oldin rate con imzolanishi shart. Bu hujjatsiz hech qachon harakatlanma!</div>
+        <div class="doc-flow">
+          <div class="doc-step"><span class="step-num">1.</span> Broker rate con yuboradi (email yoki portal orqali)</div>
+          <div class="doc-step"><span class="step-num">2.</span> Sen tekshirasan — narx, manzil, sana to'g'rimi?</div>
+          <div class="doc-step"><span class="step-num">3.</span> Driver imzolaydi (yoki sen elektron imzo qo'yasan)</div>
+          <div class="doc-step"><span class="step-num">4.</span> Imzolangan rate con'ni saqlab qo'yasan</div>
+          <div class="doc-step"><span class="step-num">5.</span> Muammo bo'lsa — rate con asosida gaplashasan</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-card">
+      <div class="doc-header">
+        <div>
+          <div class="doc-title">Bill of Lading</div>
+          <div class="doc-abbr">BOL · YUKI QABUL QILISH HUJJATI</div>
+        </div>
+        <div class="doc-badge db-critical">KRITIK</div>
+      </div>
+      <div class="doc-body">
+        <div class="doc-desc">BOL — shipper berадigan hujjat. Driver pickup da shu hujjatni oladi va imzolaydi. Unda yukнинг tavsifi, og'irligi, miqdori yozilgan. <strong>Driver BOL imzolash bilan yukni qabul qilgan bo'ladi</strong> — shuning uchun yuk holati tekshirilishi shart!</div>
+        <div class="doc-flow">
+          <div class="doc-step"><span class="step-num">1.</span> Driver shippergа keladi</div>
+          <div class="doc-step"><span class="step-num">2.</span> Shipper BOL beradi — yuk ma'lumotlari yozilgan</div>
+          <div class="doc-step"><span class="step-num">3.</span> Driver yuk holатini ko'radi — shikastlangan bo'lsa yozadi</div>
+          <div class="doc-step"><span class="step-num">4.</span> Driver imzolaydi — yuk javobgarligi driverga o'tadi</div>
+          <div class="doc-step"><span class="step-num">5.</span> BOL nusxasini senga yuboradi (foto yoki scan)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-card">
+      <div class="doc-header">
+        <div>
+          <div class="doc-title">Proof of Delivery</div>
+          <div class="doc-abbr">POD · YETKAZILGANLIK TASDIG'I</div>
+        </div>
+        <div class="doc-badge db-critical">KRITIK</div>
+      </div>
+      <div class="doc-body">
+        <div class="doc-desc">POD — yuk muvaffaqiyatli yetkazilganini tasdiqlovchi hujjat. Ko'pincha <strong>imzolangan BOL</strong> yoki alohida qabul qilish blankasi. POD bo'lmasa — broker to'lov qilmaydi!</div>
+        <div class="doc-flow">
+          <div class="doc-step"><span class="step-num">1.</span> Driver consignee (qabul qiluvchi) ga yetkazadi</div>
+          <div class="doc-step"><span class="step-num">2.</span> Consignee yuk sanab, holатini tekshirib imzolaydi</div>
+          <div class="doc-step"><span class="step-num">3.</span> Driver imzolangan hujjatni oladi — bu POD</div>
+          <div class="doc-step"><span class="step-num">4.</span> Driver senga POD foto yuboradi</div>
+          <div class="doc-step"><span class="step-num">5.</span> Sen POD ni brokerga yuborasan — to'lov jarayoni boshlanadi</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-card">
+      <div class="doc-header">
+        <div>
+          <div class="doc-title">Invoice</div>
+          <div class="doc-abbr">TO'LOV TALABI · HISOB-FAKTURA</div>
+        </div>
+        <div class="doc-badge db-important">MUHIM</div>
+      </div>
+      <div class="doc-body">
+        <div class="doc-desc">Invoice — brokerga yuborilادigan to'lov talabi. POD olингandан keyin sen (yoki driver) brokerga invoice yuboradi. Unda rate con dagi narx ko'rsatiladi. Broker invoice asosida to'lov qiladi.</div>
+        <div class="doc-flow">
+          <div class="doc-step"><span class="step-num">1.</span> POD oldingas keyin invoice tayyorlanadi</div>
+          <div class="doc-step"><span class="step-num">2.</span> Invoice'da: load raqami, narx, bank ma'lumotlari</div>
+          <div class="doc-step"><span class="step-num">3.</span> Email orqali brokerga yuboriladi</div>
+          <div class="doc-step"><span class="step-num">4.</span> Broker 30-45 kun ichida to'laydi (yoki factoring ishlatiladi)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-card">
+      <div class="doc-header">
+        <div>
+          <div class="doc-title">Carrier Packet</div>
+          <div class="doc-abbr">ONBOARDING HUJJATLARI TO'PLAMI</div>
+        </div>
+        <div class="doc-badge db-important">MUHIM</div>
+      </div>
+      <div class="doc-body">
+        <div class="doc-desc">Yangi broker bilan birinchi marta ishlashdan oldin ular <strong>carrier packet</strong> so'raydi. Bu driver'ning barcha hujjatlari to'plami. Bir marta tayyorlab qo'yilsa, har yangi brokerga yuboriladi.</div>
+        <div class="doc-flow">
+          <div class="doc-step"><span class="step-num">→</span> MC Certificate — transport litsenziyasi</div>
+          <div class="doc-step"><span class="step-num">→</span> Insurance Certificate (COI) — sug'urta</div>
+          <div class="doc-step"><span class="step-num">→</span> W-9 Form — soliq hujjati</div>
+          <div class="doc-step"><span class="step-num">→</span> Void Check yoki bank ma'lumotlari</div>
+          <div class="doc-step"><span class="step-num">→</span> Driver's License nusxasi</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-card">
+      <div class="doc-header">
+        <div>
+          <div class="doc-title">Dispatcher Agreement</div>
+          <div class="doc-abbr">DISPATCHER-DRIVER SHARTNOMASI</div>
+        </div>
+        <div class="doc-badge db-useful">KERAK</div>
+      </div>
+      <div class="doc-body">
+        <div class="doc-desc">Sen driver bilan ishlaшdan oldin tuzadigan shartnoma. Komissiya foizi, xizmat ko'rsatish shartlari, bekor qilish qoidalari yoziladi. Bu hujjat seni himoya qiladi.</div>
+        <div class="doc-flow">
+          <div class="doc-step"><span class="step-num">→</span> Komissiya: 8-10% har bir load'dan</div>
+          <div class="doc-step"><span class="step-num">→</span> Termination: 30 kun oldin xabar berish</div>
+          <div class="doc-step"><span class="step-num">→</span> Scope: sen faqat dispatch qilasan, driver o'z xarajatlarini o'zi to'laydi</div>
+          <div class="doc-step"><span class="step-num">→</span> Payment: driver to'lovdan 3 kun ichida komissiya beradi</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="panel" id="panel-timeline">
+    <div class="sh">BITTA LOAD — BOSHIDAN OXIRIGACHA</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:24px;">Har bir load shu bosqichlardan o'tadi. Sen (dispatcher) har bosqichda nima qilishing kerakligini bil.</p>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-content">
+          <div class="tl-title">1. Load topiladi</div>
+          <div class="tl-desc">DAT yoki Truckstop'da mos load ko'rasan. Origin, destination, rate, truck type tekshirasan. Driver'ning joyi va availability bilan solishtirasан.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-content">
+          <div class="tl-title">2. Broker bilan qo'ng'iroq</div>
+          <div class="tl-desc">Broker'ga qo'ng'iroq qilasan. Truck ma'lumotlarini aytasan. Narx kelishasан. "Best you can do?" deysan.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-content">
+          <div class="tl-title">3. Rate Con keladi</div>
+          <div class="tl-desc">Broker rate con yuboradi. Sen tekshirasan — narx to'g'rimi, manzil to'g'rimi, sana to'g'rimi? Hammasi OK bo'lsa imzolaysan.</div>
+          <span class="tl-doc">RATE CON</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-content">
+          <div class="tl-title">4. Driver yo'lga chiqadi</div>
+          <div class="tl-desc">Driver pickup manzilga boradi. Sen unga shipper kontakti, manzil, vaqt ma'lumotlarini berasan. "Call me when you arrive" deysan.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-content">
+          <div class="tl-title">5. Pickup — BOL imzolanadi</div>
+          <div class="tl-desc">Driver shippergа keladi, yuk holatini tekshiradi, BOL imzolaydi. BOL nusxasini senga yuboradi.</div>
+          <span class="tl-doc">BOL</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-content">
+          <div class="tl-title">6. Transit — tracking</div>
+          <div class="tl-desc">Driver yo'lda. Sen brokerga update berasan. "Driver is en route, on schedule." Muammo bo'lsa darhol xabar berasan.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-content">
+          <div class="tl-title">7. Delivery — POD olinadi</div>
+          <div class="tl-desc">Driver consignee ga yetkazadi. Qabul qiluvchi imzolaydi — bu POD. Driver senga foto yuboradi.</div>
+          <span class="tl-doc">POD</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-content">
+          <div class="tl-title">8. Invoice yuboriladi</div>
+          <div class="tl-desc">POD + Rate Con bilan invoice tayyorlab brokerga yuborasan. To'lov 30-45 kunda keladi yoki factoring bilan darhol.</div>
+          <span class="tl-doc">INVOICE</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot" style="background:var(--green)"></div></div>
+        <div class="tl-content">
+          <div class="tl-title" style="color:var(--green)">9. To'lov keladi 💰</div>
+          <div class="tl-desc">Broker to'laydi. Sen komissiyangni ajratasan. Driver qolganini oladi. Load tugadi — keyingi load!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VOCAB -->
+  <div class="panel" id="panel-vocab">
+    <div class="vocab-controls">
+      <button class="vocab-mode-btn active" onclick="setMode('list',this)">📋 RO'YXAT</button>
+      <button class="vocab-mode-btn" onclick="setMode('flash',this)">🃏 FLASHCARD</button>
+      <div class="vocab-counter" id="learnedCount">0/30 yodlandi</div>
+    </div>
+    <div id="vocab-list-wrap"><div class="vocab-list" id="vocabList"></div></div>
+    <div class="flashcard-wrap" id="vocab-flash-wrap">
+      <div class="flashcard" id="mainCard" onclick="flipCard()">
+        <div class="flashcard-inner">
+          <div class="fc-face fc-front">
+            <div class="fc-label">INGLIZCHA SO'Z</div>
+            <div class="fc-term" id="fcTerm">—</div>
+            <div class="fc-hint">bosing → tarjimasi</div>
+          </div>
+          <div class="fc-face fc-back">
+            <div class="fc-label">MA'NOSI</div>
+            <div class="fc-def" id="fcDef">—</div>
+            <div class="fc-uz" id="fcUz">—</div>
+            <div class="fc-ex" id="fcEx">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="fc-nav">
+        <button class="fc-btn" onclick="fcPrev()">← Oldingi</button>
+        <div class="fc-pos" id="fcPos">1 / 30</div>
+        <button class="fc-btn" onclick="fcNext()">Keyingi →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="panel" id="panel-quiz">
+    <div class="sh">BILIMNI TEKSHIR</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:24px;">10 ta savol. Hujjatlar va vocab'dan.</p>
+    <div class="quiz-wrap" id="quizWrap">
+      <div class="quiz-q" id="quizQ"></div>
+      <div class="quiz-options" id="quizOpts"></div>
+      <div class="quiz-feedback" id="quizFeedback"></div>
+      <button class="quiz-next-btn" id="quizNext" onclick="nextQuestion()">Keyingi →</button>
+    </div>
+    <div class="quiz-score" id="quizScore">
+      <div class="score-num" id="scoreNum">0</div>
+      <div class="score-label">to'g'ri / 10 ta</div>
+      <div class="score-msg" id="scoreMsg"></div>
+      <button class="fc-btn" style="margin-top:20px;" onclick="restartQuiz()">Qayta</button>
+    </div>
+  </div>
+
+  <!-- CHECKLIST -->
+  <div class="panel" id="panel-checklist">
+    <div class="sh">BUGUNGI VAZIFALAR</div>
+    <div class="checklist" id="checklistEl"></div>
+    <div class="info-card" style="margin-top:24px;">
+      <h3><div class="ic-icon">🌙</div> Ertaga — KUN 5: HOS & Regulations</h3>
+      <p>Hours of Service — driver qancha yurishga haqli. ELD nima. DOT qoidalari. Bularni bilmasang muammo paytida adashasан. Ertaga hammasi aniq!</p>
+    </div>
+    <div class="nav-links">
+      <a href="kun3-load-boards.html" class="nav-btn">← KUN 3</a>
+      <a href="kun5-hos-regulations.html" class="nav-btn">KUN 5 →</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const vocab30 = [
+  { term:"Rate Confirmation", uz:"Narx tasdig'i — asosiy shartnoma", def:"Broker va carrier o'rtasidagi shartnoma. Narx, manzil, sana yozilgan. Imzosiz harakatlanma!", ex:'"Please send the rate confirmation ASAP."' },
+  { term:"Rate Con", uz:"Rate confirmation qisqa nomi", def:"Rate Confirmation'ning qisqartmasi. Muomalada shu so'z ko'p ishlatiladi.", ex:'"Did you sign the rate con yet?"' },
+  { term:"BOL", uz:"Bill of Lading — yuk qabul hujjati", def:"Shipper berадigan hujjat. Driver pickup da oladi va imzolaydi. Yuk javobgarligi o'tadi.", ex:'"Driver needs to get the BOL signed at pickup."' },
+  { term:"Bill of Lading", uz:"Yuk yuk'lash ko'rsatmasi — rasmiy nomi", def:"BOL'ning to'liq nomi. Xalqaro va USA logistics da asosiy hujjat.", ex:'"Bill of Lading must accompany every shipment."' },
+  { term:"POD", uz:"Yetkazilganlik tasdig'i", def:"Proof of Delivery. Yuk yetkazilganini tasdiqlovchi imzolangan hujjat. To'lov uchun shart.", ex:'"Send me the POD as soon as delivery is done."' },
+  { term:"Proof of Delivery", uz:"Yetkazilganlik isboti — rasmiy nomi", def:"POD'ning to'liq nomi. Imzolangan BOL yoki alohida qabul blankasi.", ex:'"Proof of delivery required before payment."' },
+  { term:"Invoice", uz:"Hisob-faktura — to'lov talabi", def:"Brokerga yuborilادigan to'lov talabi hujjati. POD'dan keyin tayyorlanadi.", ex:'"I will send the invoice after receiving the POD."' },
+  { term:"Carrier Packet", uz:"Carrier hujjatlar to'plami", def:"Yangi broker uchun tayyorlanadigan hujjatlar to'plami. MC, COI, W-9, bank info.", ex:'"Broker needs our carrier packet before first load."' },
+  { term:"Dispatcher Agreement", uz:"Dispatcher-driver shartnomasi", def:"Dispatcher va driver o'rtasidagi xizmat ko'rsatish shartnomasi. Komissiya va shartlar yoziladi.", ex:'"Sign the dispatcher agreement before we start."' },
+  { term:"MC Number", uz:"Motor Carrier raqami — litsenziya", def:"AQSHda yuk tashish litsenziyasi raqami. Har carrier ega bo'lishi shart.", ex:'"What is your MC number? I need it for the packet."' },
+  { term:"DOT Number", uz:"Transport vazirligi raqami", def:"Department of Transportation raqami. Truck ro'yxatdan o'tganini tasdiqlaydi.", ex:'"Please provide your DOT number."' },
+  { term:"COI", uz:"Sug'urta sertifikati", def:"Certificate of Insurance. Broker har doim so'raydi. Driver sug'urta mavjudligini isbotlaydi.", ex:'"Email your COI to complete the carrier setup."' },
+  { term:"W-9 Form", uz:"Soliq hujjati", def:"IRS soliq shakli. Broker carrier'dan to'lov qilish uchun so'raydi.", ex:'"Fill out the W-9 form for tax purposes."' },
+  { term:"Signed BOL", uz:"Imzolangan yuk hujjati", def:"Driver va shipper imzolagan BOL. Yuk qabul qilinganini isbotlaydi.", ex:'"Send me the signed BOL photo right away."' },
+  { term:"Clean BOL", uz:"Shikastsiz yuk tasdig'i", def:"Yuk shikastlanmagan va to'liq ekanini ko'rsatuvchi BOL. Ideal holat.", ex:'"We got a clean BOL — no damages noted."' },
+  { term:"Damaged Freight", uz:"Shikastlangan yuk", def:"Pickup yoki delivery da shikastlangan yuk. BOL'da yozilishi shart.", ex:'"Note any damaged freight on the BOL before signing."' },
+  { term:"Freight Claim", uz:"Yuk shikasti uchun talab", def:"Yuk yo'qolsa yoki shikastlansa berilادigan kompensatsiya talabi.", ex:'"Driver filed a freight claim for damaged goods."' },
+  { term:"Lumper Receipt", uz:"Yuklash ishchisi to'lovi kvitansiyasi", def:"Lumper (yuk ko'taruvchi ishchi) ga to'langan pulning kvitansiyasi. Broker qaytarishi kerak.", ex:'"Keep the lumper receipt — broker will reimburse."' },
+  { term:"Detention Receipt", uz:"Kutish to'lovi kvitansiyasi", def:"Driver 2 soatdan ko'p kutganda to'lanadigan detention uchun kvitansiya.", ex:'"Driver waited 4 hours — get a detention receipt."' },
+  { term:"Accessorial Charges", uz:"Qo'shimcha xizmat to'lovlari", def:"Asosiy rate'dan tashqari to'lovlar: detention, lumper, layover, TONU.", ex:'"Accessorial charges must be approved by broker."' },
+  { term:"Load Number", uz:"Yuk raqami", def:"Har bir load'ning unikal raqami. Rate con, BOL, invoice hammasi shu raqam ostida.", ex:'"Reference load number 4521 in your invoice."' },
+  { term:"Reference Number", uz:"Havola raqami", def:"Broker berадigan yuk identifikatsiya raqami. Muomalada doim ishlatiladi.", ex:'"What is the reference number for this load?"' },
+  { term:"Consignee", uz:"Yukni qabul qiluvchi", def:"Yuk yetkazilادigan joy — ombor, do'kon, fabrika. Ular POD imzolaydi.", ex:'"Consignee is Walmart DC in Atlanta."' },
+  { term:"Shipper", uz:"Yukni yuboruvchi", def:"Yukni yuboruvchi kompaniya. BOL berади va yukni tayyorlaydi.", ex:'"Shipper contact is John at 312-555-0100."' },
+  { term:"Seal Number", uz:"Muhر raqami", def:"Trailer eshigi muhriga yozilgan raqam. BOL'da ko'rsatiladi. Butunlikni tasdiqlaydi.", ex:'"Note the seal number on the BOL — 8834521."' },
+  { term:"Pallet Count", uz:"Pallet soni", def:"Trailer ichidagi pallet (yuk platformasi) soni. BOL'da ko'rsatiladi.", ex:'"BOL shows 22 pallets — driver should confirm."' },
+  { term:"Short Shipment", uz:"Kam yuk", def:"Kutilganidan kam yuk yetkazilishi. BOL'da qayd etilishi shart.", ex:'"Short shipment — only 20 pallets instead of 22."' },
+  { term:"Over Shipment", uz:"Ko'p yuk", def:"Kutilganidan ko'p yuk yetkazilishi. Ham BOL'da qayd etiladi.", ex:'"Over shipment noted — 24 pallets received."' },
+  { term:"Factoring", uz:"Hisob-fakturani darhol pulga aylantirish", def:"Factoring kompaniya invoice'ni darhol to'laydi (2-5% chegirma bilan). Driver 30 kun kutmaydi.", ex:'"We use OTR Capital for factoring — paid same day."' },
+  { term:"Quick Pay", uz:"Tez to'lov", def:"Broker invoice'ni tez to'laydi lekin kichik discount oladi. Factoring'ga alternativ.", ex:'"Broker offers quick pay at 2% discount."' },
+];
+
+let learned=[];
+try{learned=JSON.parse(localStorage.getItem('kun4learned')||'[]');}catch(e){}
+
+function renderList(){
+  document.getElementById('vocabList').innerHTML=vocab30.map((v,i)=>`
+    <div class="vocab-item ${learned.includes(i)?'learned':''}" id="vi${i}">
+      <div class="vocab-n">${String(i+1).padStart(2,'0')}</div>
+      <div class="vocab-body">
+        <div class="vocab-term">${v.term}</div>
+        <div class="vocab-uz">🇺🇿 ${v.uz}</div>
+        <div class="vocab-def-text">${v.def}</div>
+        <div class="vocab-example">${v.ex}</div>
+      </div>
+      <button class="learn-btn" onclick="toggleLearn(${i})">✓</button>
+    </div>
+  `).join('');
+  updateCount();
+}
+
+function toggleLearn(i){
+  if(learned.includes(i))learned=learned.filter(x=>x!==i);
+  else learned.push(i);
+  try{localStorage.setItem('kun4learned',JSON.stringify(learned));}catch(e){}
+  document.getElementById('vi'+i).classList.toggle('learned');
+  updateCount();
+}
+
+function updateCount(){document.getElementById('learnedCount').textContent=learned.length+'/30 yodlandi';}
+renderList();
+
+let fcIdx=0,fcFlipped=false;
+function renderFC(){
+  const v=vocab30[fcIdx];
+  document.getElementById('fcTerm').textContent=v.term;
+  document.getElementById('fcDef').textContent=v.def;
+  document.getElementById('fcUz').textContent='🇺🇿 '+v.uz;
+  document.getElementById('fcEx').textContent=v.ex;
+  document.getElementById('fcPos').textContent=(fcIdx+1)+' / '+vocab30.length;
+  document.getElementById('mainCard').classList.remove('flipped');
+  fcFlipped=false;
+}
+function flipCard(){fcFlipped=!fcFlipped;document.getElementById('mainCard').classList.toggle('flipped',fcFlipped);}
+function fcNext(){fcIdx=(fcIdx+1)%vocab30.length;renderFC();}
+function fcPrev(){fcIdx=(fcIdx-1+vocab30.length)%vocab30.length;renderFC();}
+renderFC();
+
+function setMode(mode,btn){
+  document.querySelectorAll('.vocab-mode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(mode==='list'){document.getElementById('vocab-list-wrap').style.display='';document.getElementById('vocab-flash-wrap').classList.remove('active');}
+  else{document.getElementById('vocab-list-wrap').style.display='none';document.getElementById('vocab-flash-wrap').classList.add('active');renderFC();}
+}
+
+let quizQuestions=[],currentQ=0,score=0,answered=false;
+function buildQuiz(){
+  quizQuestions=[];
+  const pool=[...vocab30].sort(()=>Math.random()-0.5).slice(0,10);
+  pool.forEach(v=>{
+    const others=vocab30.filter(x=>x.term!==v.term).sort(()=>Math.random()-0.5).slice(0,3).map(x=>x.uz);
+    quizQuestions.push({q:`"${v.term}" — o'zbekcha ma'nosi?`,correct:v.uz,opts:[v.uz,...others].sort(()=>Math.random()-0.5),def:v.def});
+  });
+  currentQ=0;score=0;answered=false;renderQuestion();
+}
+function renderQuestion(){
+  if(currentQ>=quizQuestions.length){showScore();return;}
+  const q=quizQuestions[currentQ];
+  document.getElementById('quizQ').textContent=`${currentQ+1}/10 — ${q.q}`;
+  document.getElementById('quizFeedback').textContent='';
+  document.getElementById('quizNext').classList.remove('show');
+  answered=false;
+  document.getElementById('quizOpts').innerHTML=q.opts.map(o=>`<button class="quiz-opt" onclick="answerQ('${o.replace(/'/g,"\\'")}',this)">${o}</button>`).join('');
+}
+function answerQ(ans,btn){
+  if(answered)return;answered=true;
+  const q=quizQuestions[currentQ];
+  document.querySelectorAll('.quiz-opt').forEach(b=>{if(b.textContent===q.correct)b.classList.add('correct');});
+  if(ans===q.correct){score++;document.getElementById('quizFeedback').textContent='✓ To\'g\'ri! '+q.def;}
+  else{btn.classList.add('wrong');document.getElementById('quizFeedback').textContent='✗ Noto\'g\'ri. To\'g\'risi: '+q.correct;}
+  document.getElementById('quizNext').classList.add('show');
+}
+function nextQuestion(){currentQ++;renderQuestion();}
+function showScore(){
+  document.getElementById('quizWrap').style.display='none';
+  document.getElementById('quizScore').classList.add('show');
+  document.getElementById('scoreNum').textContent=score+'/10';
+  document.getElementById('scoreMsg').textContent=['Yana bir bor! 💪','Yaxshi! 🔥','Zo\'r! 👍','Ajoyib! 🎯','PERFECT! 🚀'][Math.min(Math.floor(score/2),4)];
+}
+function restartQuiz(){document.getElementById('quizWrap').style.display='';document.getElementById('quizScore').classList.remove('show');buildQuiz();}
+buildQuiz();
+
+const tasks=[
+  'Rate Confirmation nima ekanini va nima uchun muhimligini tushundim',
+  'BOL — Bill of Lading ni tushundim (pickup da nima bo\'ladi)',
+  'POD — Proof of Delivery ni tushundim (delivery da nima bo\'ladi)',
+  'Invoice qanday va qachon yuborilishini bildim',
+  'Carrier Packet ichida nima borligini bildim',
+  'Load boshidan oxirigacha timeline ni o\'qidim',
+  'Factoring va Quick Pay farqini tushundim',
+  '30 ta vocab ro\'yxatini o\'qidim',
+  'Flashcard bilan mashq qildim',
+  'Testni bajardim',
+];
+let checked=[];
+try{checked=JSON.parse(localStorage.getItem('kun4check')||'[]');}catch(e){}
+function renderChecklist(){
+  document.getElementById('checklistEl').innerHTML=tasks.map((t,i)=>`
+    <div class="check-item ${checked.includes(i)?'done':''}" onclick="toggleCheck(${i})">
+      <div class="check-box"><span class="checkmark">✓</span></div>
+      <div class="check-text">${t}</div>
+    </div>
+  `).join('');
+}
+function toggleCheck(i){
+  if(checked.includes(i))checked=checked.filter(x=>x!==i);
+  else checked.push(i);
+  try{localStorage.setItem('kun4check',JSON.stringify(checked));}catch(e){}
+  renderChecklist();
+}
+renderChecklist();
+
+function switchTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
